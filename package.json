@@ -1,0 +1,14 @@
+{
+  "name": "sleep-tracker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "watch": "shadow-cljs watch app",
+    "build": "shadow-cljs release app",
+    "start": "npm run watch"
+  },
+  "dependencies": {
+    "shadow-cljs": "^2.15.12"
+  }
+}
