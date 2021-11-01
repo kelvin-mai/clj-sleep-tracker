@@ -1,0 +1,10 @@
+{:system/config {:db {:adapter "postgresql"
+                      :server-name #or [#env POSTGRES_HOST "localhost"]
+                      :database-name #or [#env POSTGRES_DB "sleep_db"]
+                      :username #or [#env POSTGRES_USER "postgres"]
+                      :password #or [#env POSTGRES_PASSWORD "postgres"]}
+                 :http-port #or [#env PORT 8080]}
+ :postgres/db {:config #ig/ref :system/config}
+ :reitit/routes {:config #ig/ref :system/config}
+ :http/server {:router #ig/ref :reitit/routes
+               :config #ig/ref :system/config}}

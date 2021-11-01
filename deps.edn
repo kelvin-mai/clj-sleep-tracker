@@ -1,7 +1,22 @@
 {:paths ["server/src"
          "resources"]
- :deps {org.clojure/clojure {:mvn/version "1.10.3"}}
+ :deps {org.clojure/clojure {:mvn/version "1.10.3"}
+        aero/aero {:mvn/version "1.1.6"}
+        integrant/integrant {:mvn/version "0.8.0"}
+        integrant/repl {:mvn/version "0.3.2"}
+        org.postgresql/postgresql {:mvn/version "42.3.0"}
+        seancorfield/next.jdbc {:mvn/version "1.2.659"}
+        honeysql/honeysql {:mvn/version "1.0.461"}
+        hikari-cp/hikari-cp {:mvn/version "2.13.0"}
+        metosin/reitit {:mvn/version "0.5.15"}
+        http-kit/http-kit {:mvn/version "2.5.3"}}
  :aliases {:server {:main-opts ["-m" "sleep.core"]}
            :client {:extra-paths ["client/src"]
                     :extra-deps {org.clojure/clojurescript {:mvn/version "1.10.866"}
-                                 thheller/shadow-cljs {:mvn/version "2.14.6"}}}}}
+                                 thheller/shadow-cljs {:mvn/version "2.14.6"}}}
+           :dev {:extra-paths ["dev"]
+                 :extra-deps {nrepl/nrepl {:mvn/version "0.9.0-SNAPSHOT"}
+                              cider/cider-nrepl {:mvn/version "0.27.0-SNAPSHOT"}}
+                 :main-opts ["-m" "nrepl.cmdline"
+                             "--middleware" "[cider.nrepl/cider-middleware]"
+                             "--interactive"]}}}
