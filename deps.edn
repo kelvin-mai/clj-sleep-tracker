@@ -9,7 +9,10 @@
         honeysql/honeysql {:mvn/version "1.0.461"}
         hikari-cp/hikari-cp {:mvn/version "2.13.0"}
         metosin/reitit {:mvn/version "0.5.15"}
-        http-kit/http-kit {:mvn/version "2.5.3"}}
+        metosin/malli {:mvn/version "0.6.2"}
+        http-kit/http-kit {:mvn/version "2.5.3"}
+        buddy/buddy-auth {:mvn/version "2.2.0"}
+        buddy/buddy-hashers {:mvn/version "1.6.0"}}
  :aliases {:server {:main-opts ["-m" "sleep.core"]}
            :client {:extra-paths ["client/src"]
                     :extra-deps {org.clojure/clojurescript {:mvn/version "1.10.866"}

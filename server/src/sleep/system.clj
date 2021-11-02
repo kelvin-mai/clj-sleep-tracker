@@ -1,8 +1,9 @@
 (ns sleep.system
   (:require [aero.core :as aero]
             [integrant.core :as ig]
-            sleep.router
-            sleep.server))
+            sleep.system.db
+            sleep.system.router
+            sleep.system.server))
 
 (defmethod aero/reader 'ig/ref
   [_ _ value]

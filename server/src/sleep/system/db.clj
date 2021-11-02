@@ -1,4 +1,4 @@
-(ns sleep.db
+(ns sleep.system.db
   (:require [integrant.core :as ig]
             [hikari-cp.core :as hikari]))
 
