@@ -1,6 +1,7 @@
 (ns sleep.routing.middleware
   (:require [buddy.auth :refer [authenticated?]]
-            [sleep.routing.exception :as exception]))
+            [sleep.routing.exception :as exception])
+  (:import [java.util UUID]))
 
 (defn handle-wrap-env
   [request env]
@@ -21,6 +22,7 @@
    :wrap
    (fn [handler]
      (fn [request]
+       (let [account-id (get-in request [:identity :account/id])]
        (if (authenticated? request)
-         (handler request)
-         (exception/response 401 "Unauthorized" request))))})
+         (handler (assoc request :account-id (UUID/fromString account-id)))
+         (exception/response 401 "Unauthorized" request)))))})

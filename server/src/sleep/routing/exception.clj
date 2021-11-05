@@ -14,6 +14,9 @@
            (when exception
              exception))}))
 
+(defn not-found [request]
+  (response 404 "Resource not found" request))
+
 (defn handle-exception
   [status message]
   (fn

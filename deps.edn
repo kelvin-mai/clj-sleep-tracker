@@ -4,19 +4,20 @@
         aero/aero {:mvn/version "1.1.6"}
         integrant/integrant {:mvn/version "0.8.0"}
         integrant/repl {:mvn/version "0.3.2"}
-        org.postgresql/postgresql {:mvn/version "42.3.0"}
+        org.postgresql/postgresql {:mvn/version "42.3.1"}
         seancorfield/next.jdbc {:mvn/version "1.2.659"}
         honeysql/honeysql {:mvn/version "1.0.461"}
         hikari-cp/hikari-cp {:mvn/version "2.13.0"}
         metosin/reitit {:mvn/version "0.5.15"}
         metosin/malli {:mvn/version "0.6.2"}
         http-kit/http-kit {:mvn/version "2.5.3"}
-        buddy/buddy-auth {:mvn/version "2.2.0"}
-        buddy/buddy-hashers {:mvn/version "1.6.0"}}
+        buddy/buddy-auth {:mvn/version "3.0.1"}
+        buddy/buddy-hashers {:mvn/version "1.8.1"}
+        tick/tick {:mvn/version "0.5.0-RC4"}}
  :aliases {:server {:main-opts ["-m" "sleep.core"]}
            :client {:extra-paths ["client/src"]
-                    :extra-deps {org.clojure/clojurescript {:mvn/version "1.10.866"}
-                                 thheller/shadow-cljs {:mvn/version "2.14.6"}}}
+                    :extra-deps {org.clojure/clojurescript {:mvn/version "1.10.879"}
+                                 thheller/shadow-cljs {:mvn/version "2.15.12"}}}
            :dev {:extra-paths ["dev"]
                  :extra-deps {nrepl/nrepl {:mvn/version "0.9.0-SNAPSHOT"}
                               cider/cider-nrepl {:mvn/version "0.27.0-SNAPSHOT"}}
