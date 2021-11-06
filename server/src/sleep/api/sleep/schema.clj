@@ -1,6 +1,11 @@
 (ns sleep.api.sleep.schema
   (:require [sleep.utils.schema :refer [time? date?]]))
 
+(def get-all-query
+  [:map
+   [:start-date {:optional true} date?]
+   [:end-date {:optional true} date?]])
+
 (def create-body
   [:map
    [:sleep-date date?]

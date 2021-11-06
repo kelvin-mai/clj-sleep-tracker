@@ -2,7 +2,6 @@
   (:require [sleep.api.account.db :as account.db]
             [sleep.api.account.schema :as account.schema]
             [sleep.utils.auth :as auth]
-            [sleep.routing.middleware :refer [wrap-authorization]]
             [sleep.routing.response :refer [ok created]]
             [sleep.routing.exception :as exception]))
 
@@ -23,18 +22,8 @@
       (ok response)
       (exception/response 403 "Invalid credentials" request))))
 
-(defn me
-  [{:keys [db jwt-secret] :as request}]
-  (let [; data (:body parameters)
-        ; account (account.db/create-account db data)
-        ]
-    {:status 200
-     :body (:identity request)}))
-
 (def routes
   ["/account"
-   ["" {:get {:middleware [wrap-authorization]
-              :handler me}}]
    ["/login" {:post {:parameters {:body account.schema/login-body}
                      :handler login}}]
    ["/register" {:post {:parameters {:body account.schema/register-body}

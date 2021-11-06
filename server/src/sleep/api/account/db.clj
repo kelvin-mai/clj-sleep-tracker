@@ -17,3 +17,11 @@
                  {:select [:*]
                   :from [:account]
                   :where [:= :username username]}))
+
+(defn get-by-id
+  [db id]
+  (db/query-one! db
+                 {:select [:id
+                           :username]
+                  :from [:account]
+                  :where [:= :id id]}))

@@ -6,8 +6,8 @@
             [sleep.routing.exception :refer [not-found]]))
 
 (defn get-all-by-account
-  [{:keys [db account-id] :as request}]
-  (let [sleeps (sleep.db/get-sleep-by-account-id db account-id)
+  [{:keys [db account-id parameters] :as request}]
+  (let [sleeps (sleep.db/get-sleep-by-account-id db account-id (:query parameters))
         response (or sleeps [])]
     (ok response)))
 
@@ -46,7 +46,8 @@
 
 (def routes
   ["/sleep" {:middleware [wrap-authorization]}
-   ["" {:get get-all-by-account
+   ["" {:get {:parameters {:query sleep.schema/get-all-query}
+              :handler get-all-by-account } 
         :post {:parameters {:body sleep.schema/create-body}
                :handler create}}]
    ["/:id" {:parameters {:path [:map [:id uuid?]]}

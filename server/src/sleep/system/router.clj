@@ -4,6 +4,7 @@
             [muuntaja.core :as m]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.coercion :as coercion]
+            [reitit.ring.middleware.parameters :as parameters]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [sleep.routing.middleware :as mw]
             [sleep.routing.coercion :as routing.coercion]
@@ -22,11 +23,12 @@
                     :jwt-secret jwt-secret}
               :muuntaja m/instance
               :coercion routing.coercion/coercion
-              :middleware [exception/exception-middleware
+              :middleware [parameters/parameters-middleware
                            muuntaja/format-middleware
+                           exception/exception-middleware
                            [wrap-authentication (auth/jwt-backend jwt-secret)]
-                           coercion/coerce-request-middleware
                            coercion/coerce-response-middleware
+                           coercion/coerce-request-middleware
                            mw/wrap-env]}})
      (ring/routes
       (ring/redirect-trailing-slash-handler)))))

@@ -1,7 +1,8 @@
 (ns sleep.routing.coercion
   (:require [reitit.coercion.malli :as rm]
             [malli.transform :as mt]
-            [tick.core :as t]))
+            [tick.core :as t]
+            [malli.util :as mu]))
 
 (defn encode-time
   [schema _]
@@ -56,4 +57,5 @@
   (rm/create
     (-> rm/default-options
         (assoc-in [:transformers :body :formats "application/json"] json-transformer)
-        (assoc-in [:transformers :string :default] string-transformer))))
+        (assoc-in [:transformers :string :default] string-transformer)
+        (assoc-in [:compile] mu/open-schema))))

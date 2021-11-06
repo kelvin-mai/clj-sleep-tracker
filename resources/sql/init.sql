@@ -12,5 +12,7 @@ create table sleep (
   sleep_date date not null default now(),
   start_time time not null,
   end_time time not null,
+  duration decimal generated always as
+    (trunc(extract(epoch from (end_time - start_time + '24:00'))/3600, 2)) stored,
   constraint fk_account foreign key(account_id) references account(id)
 );

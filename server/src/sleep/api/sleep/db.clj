@@ -8,11 +8,22 @@
                   :values [data]}))
 
 (defn get-sleep-by-account-id
-  [db account-id]
-  (db/query! db
-             {:select [:*]
-              :from [:sleep]
-              :where [:= :account-id account-id]}))
+  [db account-id query]
+  (let [where-clause [:= :account-id account-id]
+        where-clause (if (or (:start-date query)
+                             (:end-date query))
+                       [:and where-clause]
+                       where-clause)
+        where-clause (cond-> where-clause
+                       (:start-date query)
+                       (conj [:> :sleep-date (:start-date query)])
+                       
+                       (:end-date query)
+                       (conj [:< :sleep-date (:end-date query)]))]
+    (db/query! db
+               {:select [:*]
+                :from [:sleep]
+                :where where-clause})))
 
 (defn get-sleep-by-id
   [db id]

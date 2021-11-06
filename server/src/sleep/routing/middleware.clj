@@ -1,5 +1,6 @@
 (ns sleep.routing.middleware
   (:require [buddy.auth :refer [authenticated?]]
+            [sleep.api.account.db :as account.db]
             [sleep.routing.exception :as exception])
   (:import [java.util UUID]))
 
@@ -21,8 +22,14 @@
   {:name ::authorization
    :wrap
    (fn [handler]
-     (fn [request]
-       (let [account-id (get-in request [:identity :account/id])]
+     (fn [{:keys [db] :as request}]
        (if (authenticated? request)
-         (handler (assoc request :account-id (UUID/fromString account-id)))
-         (exception/response 401 "Unauthorized" request)))))})
+         (let [account-id (get-in request [:identity :account/id])
+               account-id (UUID/fromString account-id)
+               account (account.db/get-by-id db account-id)]
+           (if account
+             (handler (assoc request
+                             :account-id account-id
+                             :account account))
+             (exception/response 401 "Malformed token" request)))
+         (exception/response 401 "Unauthorized" request))))})
