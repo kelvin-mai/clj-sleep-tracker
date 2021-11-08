@@ -17,5 +17,5 @@
 (defn password-match?
   [account password]
   (when (and account
-             (check password (:account/password_hash account)))
+             (check password (:account/password-hash account)))
     account))

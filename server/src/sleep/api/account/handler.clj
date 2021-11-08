@@ -14,11 +14,12 @@
 
 (defn login
   [{:keys [db parameters jwt-secret] :as request}]
-  (let [username (get-in parameters [:body :username])
+  (let [{:keys [username password]} (:body parameters)
         account (account.db/get-by-username db username)
-        response (when account
+        account (auth/password-match? account password)
+        response (when account 
                    (auth/account->response account jwt-secret))]
-    (if account
+    (if response
       (ok response)
       (exception/response 403 "Invalid credentials" request))))
 
@@ -28,4 +29,3 @@
                      :handler login}}]
    ["/register" {:post {:parameters {:body account.schema/register-body}
                         :handler register}}]])
-
