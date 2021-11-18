@@ -1,5 +1,5 @@
 (ns sleep.utils.db
-  (:require [honeysql.core :as sql]
+  (:require [honey.sql :as sql]
             [next.jdbc :as jdbc]
             [next.jdbc.result-set :as rs]))
 
