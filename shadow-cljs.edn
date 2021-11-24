@@ -5,5 +5,7 @@
                 :asset-path "/js"
                 :modules {:main {:init-fn sleep.core/init}}
                 :devtools {:after-load sleep.core/reload
+                           :preloads [day8.re-frame-10x.preload]
                            :http-root "resources/public"
-                           :http-port 3000}}}}
+                           :http-port 3000}
+                :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}}}}
