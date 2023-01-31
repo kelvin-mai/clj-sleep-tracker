@@ -42,5 +42,12 @@
                               :password "password"}})
        :body
        (muuntaja.core/decode "application/json"))
+  (->> (router {:request-method :get
+                :uri "/api/sleep"
+                :headers {:authorization (str "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50L2lkIjoiZDg0MzdlYzktOWM4MC00NDliLTliNjYtZjBmMzI5MjY1YzRmIiwiYWNjb3VudC91c2VybmFtZSI6InVzZXIifQ.tbV1Ol5CCBgVA_Y3r72W-28IUWwcbBfJ09px-pzxd4Q")}
+                :body-params {:username "user"
+                              :password "password"}})
+       :body
+       (muuntaja.core/decode "application/json"))
   ;
   )
