@@ -16,4 +16,5 @@
 (rf/reg-event-db
  :decrease
  (fn [db]
+(js/console.log (:counter db))
    (update db :counter dec)))

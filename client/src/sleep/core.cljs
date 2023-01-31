@@ -4,18 +4,17 @@
             [sleep.db]))
 
 (defn app []
-  [:h1 "hello world"])
+  [:<> [:h1 {:class "p-4 mx-auto capitalize"} "hello world"]
+   [:button {:on-click #(rf/dispatch [:increase])} "+"]
+   [:button {:on-click #(rf/dispatch [:decrease])} "-"]])
 
-(defn reload []
+(defn ^:dev/after-load reload []
   (rf/clear-subscription-cache!)
   (rdom/render [app]
                (.getElementById js/document "app"))
   (js/console.log "reloaded"))
 
-(defn init []
+(defn ^:export init []
   (js/console.log "application starting")
   (rf/dispatch-sync [:initialize-db])
   (reload))
-
-(comment
-  (rf/dispatch [:increase]))
