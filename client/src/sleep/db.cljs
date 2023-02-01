@@ -2,19 +2,9 @@
   (:require [re-frame.core :as rf]))
 
 (def app-db
-  {:counter 0})
+  {:dialog {:open? false
+            :type :login}})
 
 (rf/reg-event-db
  :initialize-db
  (fn [] app-db))
-
-(rf/reg-event-db
- :increase
- (fn [db]
-   (update db :counter inc)))
-
-(rf/reg-event-db
- :decrease
- (fn [db]
-(js/console.log (:counter db))
-   (update db :counter dec)))

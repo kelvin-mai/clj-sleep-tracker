@@ -1,12 +1,10 @@
 (ns sleep.core
   (:require [reagent.dom :as rdom]
             [re-frame.core :as rf]
-            [sleep.db]))
-
-(defn app []
-  [:<> [:h1 {:class "p-4 mx-auto capitalize"} "hello world"]
-   [:button {:on-click #(rf/dispatch [:increase])} "+"]
-   [:button {:on-click #(rf/dispatch [:decrease])} "-"]])
+            [sleep.subscriptions]
+            [sleep.events]
+            [sleep.db]
+            [sleep.components.core :refer [app]]))
 
 (defn ^:dev/after-load reload []
   (rf/clear-subscription-cache!)
@@ -17,4 +15,5 @@
 (defn ^:export init []
   (js/console.log "application starting")
   (rf/dispatch-sync [:initialize-db])
+  (js/console.log "Begin rendering")
   (reload))

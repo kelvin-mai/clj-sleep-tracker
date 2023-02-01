@@ -11,6 +11,8 @@
     "start": "npm run dev"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.8",
+    "@heroicons/react": "^2.0.14"
   },
   "devDependencies": {
     "@js-joda/core": "3.2.0",
