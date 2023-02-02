@@ -1,6 +1,8 @@
 (ns sleep.components.auth
   (:require [re-frame.core :as rf]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [sleep.components.common :refer [form-input
+                                             button-class]]))
 
 (def initial-state
   {:account {}})
@@ -11,7 +13,6 @@
  (fn [cofx]
    (let [token (:account/token cofx)]
      {:fx [[:dispatch [:http {:url "/api/account"
-                              :method :get
                               :headers {"Authorization" (str "Bearer " token)}
                               :on-success [:auth-success]
                               :on-failure [:logout]}]]]})))
@@ -55,10 +56,10 @@
 
 (defn logout-dialog []
   [:div {:class "mt-2 flex justify-between"}
-   [:button {:class "bg-rose-500 text-white py-2 px-4 rounded-lg hover:bg-rose-600"
+   [:button {:class (str button-class " bg-white text-gray-700 hover:bg-gray-50")
              :on-click #(rf/dispatch [:close-dialog])}
     "Cancel"]
-   [:button {:class "bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600"
+   [:button {:class (str button-class " bg-indigo-500 text-white hover:bg-indigo-600 ml-2")
              :on-click #(rf/dispatch [:logout])}
     "Confirm"]])
 
@@ -71,30 +72,20 @@
               :on-submit (fn [e]
                            (.preventDefault e)
                            (rf/dispatch [:login @form-state]))}
-       [:div {:class "mb-4"}
-        [:label {:class "block font-medium mb-2"
-                 :for "username"} "Username"]
-        [:input.w-full.border.border-gray-400.p-2.rounded-lg
-         {:class "w-full border border-gray-400 p-2 rounded-md"
-          :type "text"
-          :id "username"
-          :value (:username @form-state)
-          :on-change (on-change :username)
-          :required true}]]
-       [:div {:class "mb-4"}
-        [:label {:class "block font-medium mb-2"
-                 :for "password"} "Password"]
-        [:input {:class "w-full border border-gray-400 p-2 rounded-md"
-                 :type "password"
-                 :id "password"
-                 :value (:password @form-state)
-                 :on-change (on-change :password)
-                 :required true}]]
+       [form-input {:id "username"
+                    :label "Username"
+                    :value (:username @form-state)
+                    :on-change (on-change :username)
+                    :required true}]
+       [form-input {:id "password"
+                    :label "Password"
+                    :type "password"
+                    :value (:password @form-state)
+                    :on-change (on-change :password)}]
        [:div {:class "flex justify-between"}
-        [:button {:class "bg-sky-500 text-white py-2 px-4 rounded-lg hover:bg-sky-600"
-                  :type "button"
+        [:button {:class (str button-class " bg-teal-500 text-white hover:bg-teal-600")
                   :on-click #(rf/dispatch [:register @form-state])}
          "Register"]
-        [:button {:class "bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600"
+        [:button {:class (str button-class " bg-indigo-500 text-white hover:bg-indigo-600 ml-2")
                   :type "submit"}
          "Login"]]])))

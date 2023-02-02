@@ -1,6 +1,7 @@
 (ns sleep.components.core
   (:require [re-frame.core :as rf]
             [sleep.components.dialogs :refer [dialog]]
+            [sleep.components.stats :refer [stats]]
             ["@heroicons/react/24/solid" :refer [PlusIcon
                                                  UserCircleIcon]]))
 
@@ -23,8 +24,11 @@
     " New Entry"]])
 
 (defn app []
-  [:div {:class "bg-slate-300"}
-   [navbar]
-   [:section {:class "bg-white mx-auto pt-4 h-screen md:mt-4 md:border md:w-5/6 md:rounded-md md:shadow"}
-    [header]]
-   [dialog]])
+  (let [account @(rf/subscribe [:account])]
+    [:div {:class "bg-slate-300"}
+     [navbar]
+     [:section {:class "bg-white mx-auto pt-4 h-screen md:mt-4 md:border md:w-5/6 md:rounded-md md:shadow"}
+      [header]
+      (when account
+        [stats])]
+     [dialog]]))

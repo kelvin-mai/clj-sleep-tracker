@@ -2,6 +2,8 @@
   (:require [re-frame.core :as rf]
             [sleep.utils :refer [render-children]]
             [sleep.components.auth :refer [auth-form logout-dialog]]
+            [sleep.components.common :refer [button-class]]
+            [sleep.components.entry :refer [entry-form]]
             ["@headlessui/react" :refer [Dialog Transition]]))
 
 (def Panel (.-Panel Dialog))
@@ -16,11 +18,13 @@
 
 (def dialog-types
   {:loading {:title "Loading"
-             :description "Loading..."}
+             :description "..."}
    :error {:title "Error"
            :description "Something went wrong. Please try again."}
    :auth {:title "Authentication"
           :description "Please login to view application."}
+   :entry {:title "Sleep Entry"
+           :description "Create or edit sleep at a given date."}
    :logout {:title "Log out?"
             :description "Do you want to leave the application?"}})
 
@@ -68,7 +72,7 @@
                            :leave "ease-in duration-200"
                            :leave-from "opacity-100 scale-100"
                            :leave-to "opacity-0 scale-95"}
-       [:> Panel {:class "w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"}
+       [:> Panel {:class "w-full max-w-md transform overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all"}
         [:> Title {:as "h3"
                    :class "text-lg font-medium"}
          title]
@@ -83,7 +87,7 @@
      (when error-message
        [:p {:class "mt-4"} error-message])
      [:div {:class "flex justify-end mt-2"}
-      [:button {:class "bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600"
+      [:button {:class (str button-class "bg-indigo-500 text-white hover:bg-indigo-600")
                 :on-click #(rf/dispatch [:close-dialog])}
        "Cancel"]]]))
 
@@ -100,5 +104,5 @@
          :auth [auth-form]
          :logout [logout-dialog]
          :error [error-dialog]
-          ;;  :entry [entry-dialog]
+         :entry [entry-form]
          nil)]]]))

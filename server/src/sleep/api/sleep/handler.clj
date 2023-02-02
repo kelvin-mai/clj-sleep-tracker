@@ -6,7 +6,7 @@
             [sleep.routing.exception :refer [not-found]]))
 
 (defn get-all-by-account
-  [{:keys [db account-id parameters] :as request}]
+  [{:keys [db account-id parameters]}]
   (let [sleeps (sleep.db/get-sleep-by-account-id db account-id (:query parameters))
         response (or sleeps [])]
     (ok response)))
@@ -20,7 +20,7 @@
       (not-found request))))
 
 (defn create
-  [{:keys [db parameters account-id] :as request}]
+  [{:keys [db parameters account-id]}]
   (let [data (assoc (:body parameters) :account-id account-id)
         response (sleep.db/create-sleep db data)]
     (created response)))

@@ -7,7 +7,7 @@
 
 (rf/reg-event-fx
  :http
- (fn [{:keys [db]} [_ {:keys [method url data headers on-success on-failure]}]]
+ (fn [_ [_ {:keys [method url data headers on-success on-failure]}]]
    {:http-xhrio {:method (or method :get)
                  :uri (str base-url url)
                  :params data

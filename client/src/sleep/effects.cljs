@@ -10,5 +10,4 @@
  :local-storage
  (fn [cofx k]
    (let [v (.getItem (.-localStorage js/window) k)]
-     (js/console.log :local-storage k)
      (assoc cofx k v))))

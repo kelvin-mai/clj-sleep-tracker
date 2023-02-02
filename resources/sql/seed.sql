@@ -7,7 +7,7 @@ with a as (select id from account),
 insert into sleep (account_id, sleep_date, start_time, end_time)
   select a.id
         ,(current_date - (nums.num || ' day' )::interval)::date
-        ,'10:00PM'::time
-        ,'8:00AM'::time
+        ,(random() * interval '3 hours') + '8:00PM'::time
+        ,(random() * interval '3 hours') + '6:00AM'::time
 from nums cross join a
 on conflict do nothing;

@@ -9,7 +9,7 @@ create table account (
 create table sleep (
   id uuid not null primary key default uuid_generate_v4(),
   account_id uuid not null,
-  sleep_date date not null default now(),
+  sleep_date date unique not null default now(),
   start_time time not null,
   end_time time not null,
   duration decimal generated always as
