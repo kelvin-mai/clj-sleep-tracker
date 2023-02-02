@@ -32,7 +32,7 @@
         data (:body parameters)
         response (sleep.db/update-sleep-by-id db ids data)]
     (if response
-      (ok response) 
+      (ok response)
       (not-found request))))
 
 (defn delete-by-ids
@@ -41,13 +41,13 @@
              :id (get-in parameters [:path :id])}
         response (sleep.db/delete-sleep-by-id db ids)]
     (if response
-      (ok response) 
+      (ok response)
       (not-found request))))
 
 (def routes
   ["/sleep" {:middleware [wrap-authorization]}
    ["" {:get {:parameters {:query sleep.schema/get-all-query}
-              :handler get-all-by-account } 
+              :handler get-all-by-account}
         :post {:parameters {:body sleep.schema/create-body}
                :handler create}}]
    ["/:id" {:parameters {:path [:map [:id uuid?]]}

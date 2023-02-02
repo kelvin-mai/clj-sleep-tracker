@@ -1,9 +1,11 @@
 (ns sleep.db
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [sleep.components.dialogs :as dialogs]
+            [sleep.components.auth :as auth]))
 
 (def app-db
-  {:dialog {:open? false
-            :type :login}})
+  {:dialog dialogs/initial-state
+   :auth auth/initial-state})
 
 (rf/reg-event-db
  :initialize-db

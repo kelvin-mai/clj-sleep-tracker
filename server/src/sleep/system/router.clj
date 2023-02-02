@@ -5,6 +5,7 @@
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.coercion :as coercion]
             [reitit.ring.middleware.parameters :as parameters]
+            [ring.middleware.cors :refer [wrap-cors]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [sleep.routing.middleware :as mw]
             [sleep.routing.coercion :as routing.coercion]
@@ -25,6 +26,8 @@
               :coercion routing.coercion/coercion
               :middleware [parameters/parameters-middleware
                            muuntaja/format-middleware
+                           [wrap-cors :access-control-allow-origin [#"http://localhost:3000"]
+                            :access-control-allow-methods [:get :post :put :delete]]
                            exception/exception-middleware
                            [wrap-authentication (auth/jwt-backend jwt-secret)]
                            coercion/coerce-response-middleware
