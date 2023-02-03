@@ -4,17 +4,13 @@
             [sleep.components.auth :refer [auth-form logout-dialog]]
             [sleep.components.common :refer [button-class]]
             [sleep.components.entry :refer [entry-form]]
+            [sleep.db.ui :as ui]
             ["@headlessui/react" :refer [Dialog Transition]]))
 
 (def Panel (.-Panel Dialog))
 (def Title (.-Title Dialog))
 (def Description (.-Description Dialog))
 (def TransitionChild (.-Child Transition))
-
-(def initial-state
-  {:open? false
-   :type :loading
-   :error-message ""})
 
 (def dialog-types
   {:loading {:title "Loading"
@@ -28,29 +24,6 @@
    :logout {:title "Log out?"
             :description "Do you want to leave the application?"}})
 
-(rf/reg-event-db
- :close-dialog
- (fn [db] (assoc-in db [:dialog :open?] false)))
-
-(rf/reg-event-db
- :set-dialog
- (fn [db [_ type error-message]]
-   (assoc db :dialog {:open? true
-                      :type type
-                      :error-message error-message})))
-
-(rf/reg-event-db
- :http-failure
- (fn [db [_ {:keys [response]}]]
-   (assoc db :dialog {:open? true
-                      :type :error
-                      :error-message (:message response)})))
-
-(rf/reg-sub
- :dialog
- (fn [db]
-   (get db :dialog)))
-
 (defn dialog-overlay []
   [:> TransitionChild {:enter "ease-out duration-300"
                        :enter-from "opacity-0"
@@ -62,7 +35,7 @@
           :aria-hidden true}]])
 
 (defn dialog-panel [& children]
-  (let [{:keys [type]} @(rf/subscribe [:dialog])
+  (let [{:keys [type]} @(rf/subscribe [::ui/dialog])
         {:keys [title description]} (get dialog-types type)]
     [:div {:class "fixed inset-0 overflow-y-auto"}
      [:div {:class "flex min-h-full items-center justify-center p-4 text-center"}
@@ -82,21 +55,21 @@
         #_(render-children children)]]]]))
 
 (defn error-dialog []
-  (let [{:keys [error-message]} @(rf/subscribe [:dialog])]
+  (let [{:keys [error-message]} @(rf/subscribe [::ui/dialog])]
     [:<>
      (when error-message
        [:p {:class "mt-4"} error-message])
      [:div {:class "flex justify-end mt-2"}
       [:button {:class (str button-class "bg-indigo-500 text-white hover:bg-indigo-600")
-                :on-click #(rf/dispatch [:close-dialog])}
+                :on-click #(rf/dispatch [::ui/close-dialog])}
        "Cancel"]]]))
 
 (defn dialog []
-  (let [{:keys [open? type]} @(rf/subscribe [:dialog])]
+  (let [{:keys [open? type]} @(rf/subscribe [::ui/dialog])]
     [:> Transition {:appear true
                     :show open?}
      [:> Dialog {:class "relative z-10"
-                 :on-close #(when (not= type :loading) (rf/dispatch [:close-dialog]))}
+                 :on-close #(when (not= type :loading) (rf/dispatch [::ui/close-dialog]))}
       [dialog-overlay]
 
       [dialog-panel

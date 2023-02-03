@@ -1,9 +1,8 @@
 (ns sleep.core
   (:require [reagent.dom :as rdom]
             [re-frame.core :as rf]
-            [sleep.effects]
-            [sleep.events]
-            [sleep.db]
+            [sleep.db.core]
+            [sleep.db.auth :as auth]
             [sleep.components.core :refer [app]]))
 
 (defn ^:dev/after-load reload []
@@ -16,5 +15,5 @@
   (js/console.log "application starting")
   (rf/dispatch-sync [:initialize-db])
   (js/console.log "Begin rendering")
-  (rf/dispatch [:check-identity])
+  (rf/dispatch [::auth/check-identity])
   (reload))

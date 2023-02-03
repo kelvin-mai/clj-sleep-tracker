@@ -18,8 +18,7 @@
        [:> DatePicker {:primary-color "indigo"
                        :value @state
                        :on-change #(reset! state %)
-                       :show-shortcuts true
-                       :show-footer true}]
+                       :show-shortcuts true}]
        [:div
         [stats-graph]
         [stats-table]]])))
