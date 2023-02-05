@@ -6,6 +6,10 @@
    [:start-date {:optional true} date?]
    [:end-date {:optional true} date?]])
 
+(def path-param
+  [:map
+   [:date date?]])
+
 (def create-body
   [:map
    [:sleep-date date?]

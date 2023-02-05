@@ -1,11 +1,11 @@
 (ns sleep.components.dialogs
   (:require [re-frame.core :as rf]
+            ["@headlessui/react" :refer [Dialog Transition]]
             [sleep.utils :refer [render-children]]
             [sleep.components.auth :refer [auth-form logout-dialog]]
             [sleep.components.common :refer [button-class]]
             [sleep.components.entry :refer [entry-form]]
-            [sleep.db.ui :as ui]
-            ["@headlessui/react" :refer [Dialog Transition]]))
+            [sleep.db.ui :as ui]))
 
 (def Panel (.-Panel Dialog))
 (def Title (.-Title Dialog))
@@ -51,8 +51,7 @@
          title]
         [:> Description {:as "p"}
          description]
-        children
-        #_(render-children children)]]]]))
+        (render-children children)]]]]))
 
 (defn error-dialog []
   (let [{:keys [error-message]} @(rf/subscribe [::ui/dialog])]
@@ -60,9 +59,9 @@
      (when error-message
        [:p {:class "mt-4"} error-message])
      [:div {:class "flex justify-end mt-2"}
-      [:button {:class (str button-class "bg-indigo-500 text-white hover:bg-indigo-600")
+      [:button {:class (str button-class " bg-indigo-500 text-white hover:bg-indigo-600")
                 :on-click #(rf/dispatch [::ui/close-dialog])}
-       "Cancel"]]]))
+       "Confirm"]]]))
 
 (defn dialog []
   (let [{:keys [open? type]} @(rf/subscribe [::ui/dialog])]

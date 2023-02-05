@@ -36,6 +36,7 @@
                     :on-change (on-change :password)}]
        [:div {:class "flex justify-between"}
         [:button {:class (str button-class " bg-teal-500 text-white hover:bg-teal-600")
+                  :type "button"
                   :on-click #(rf/dispatch [::auth/register @form-state])}
          "Register"]
         [:button {:class (str button-class " bg-indigo-500 text-white hover:bg-indigo-600 ml-2")

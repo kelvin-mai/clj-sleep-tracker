@@ -1,7 +1,9 @@
 (ns sleep.components.entry
-  (:require [sleep.components.common :refer [form-input button-class]]
-            [re-frame.core :as rf]
-            [sleep.db.sleep :as sleep]))
+  (:require [re-frame.core :as rf]
+            ["dayjs" :as dayjs]
+            ["react-tailwindcss-datepicker" :as DatePicker]
+            [sleep.db.sleep :as sleep]
+            [sleep.components.common :refer [form-input button-class]]))
 
 (defn entry-form []
   (let [{:keys [sleep-date

@@ -16,35 +16,37 @@
                        where-clause)
         where-clause (cond-> where-clause
                        (:start-date query)
-                       (conj [:> :sleep-date (:start-date query)])
-                       
+                       (conj [:>= :sleep-date (:start-date query)])
+
                        (:end-date query)
-                       (conj [:< :sleep-date (:end-date query)]))]
+                       (conj [:<= :sleep-date (:end-date query)]))]
     (db/query! db
                {:select [:*]
                 :from [:sleep]
                 :where where-clause})))
 
-(defn get-sleep-by-id
-  [db id]
+(defn get-sleep-by-date
+  [db {:keys [date account-id]}]
   (db/query-one! db
                  {:select [:*]
-                  :from [:sleep]
-                  :where [:= :id id]}))
+                  :from :sleep
+                  :where [:and
+                          [:= :sleep-date date]
+                          [:= :account-id account-id]]}))
 
-(defn update-sleep-by-id
-  [db {:keys [id account-id]} data]
+(defn update-sleep-by-date
+  [db {:keys [date account-id]} data]
   (db/query-one! db
                  {:update :sleep
                   :set data
                   :where [:and
-                          [:= :id id]
+                          [:= :sleep-date date]
                           [:= :account-id account-id]]}))
 
-(defn delete-sleep-by-id
-  [db {:keys [id account-id]}]
+(defn delete-sleep-by-date
+  [db {:keys [date account-id]}]
   (db/query-one! db
                  {:delete-from :sleep
                   :where [:and
-                          [:= :id id]
+                          [:= :sleep-date date]
                           [:= :account-id account-id]]}))

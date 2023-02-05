@@ -1,7 +1,11 @@
-(ns sleep.utils)
+(ns sleep.utils
+  (:require ["dayjs" :as dayjs]))
 
 (defn render-children [children]
-  (map-indexed
-   (fn [child i]
-     (with-meta child {:key i}))
-   children))
+  (into [:<>] children))
+
+(defn dayjs-format
+  ([date-str]
+   (dayjs-format date-str "YYYY-MM-DD"))
+  ([date-str format-str]
+   (.format (dayjs date-str) format-str)))

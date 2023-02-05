@@ -1,11 +1,11 @@
 (ns sleep.components.core
   (:require [re-frame.core :as rf]
+            ["@heroicons/react/24/solid" :refer [PlusIcon
+                                                 UserCircleIcon]]
             [sleep.components.dialogs :refer [dialog]]
             [sleep.components.stats :refer [stats]]
             [sleep.db.auth :as auth]
-            [sleep.db.ui :as ui]
-            ["@heroicons/react/24/solid" :refer [PlusIcon
-                                                 UserCircleIcon]]))
+            [sleep.db.ui :as ui]))
 
 (defn navbar []
   (let [account @(rf/subscribe [::auth/account])]
