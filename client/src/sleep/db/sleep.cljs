@@ -4,14 +4,18 @@
             [sleep.db.ui :as ui]
             [sleep.utils :refer [dayjs-format]]))
 
+(def initial-form
+  {:sleep-date nil
+   :start-time nil
+   :end-time nil
+   :method nil})
+
 (def initial-state
-  {::sleep {:form {:sleep-date nil
-                   :start-time nil
-                   :end-time nil}
+  {::sleep {:form initial-form
             :data []}})
 
 (defn format-sleep [sleep]
-  (let [format-date #(dayjs-format % "MM-DD")
+  (let [format-date dayjs-format
         format-time #(dayjs-format % "hh:mm a")]
     (-> sleep
         (update :sleep/sleep-date format-date)
@@ -22,23 +26,60 @@
  ::get-sleeps
  (fn [{:keys [db]} [_ dates]]
    (let [token (get-in db [::auth/auth :account :account/token])
-         {:strs [startDate endDate]} (js->clj dates)
+         dates (if dates
+                 (js->clj dates)
+                 (get-in db [::sleep :dates]))
+         {:strs [startDate endDate]} dates
          query-params (when (and startDate endDate)
                         (str "start-date="
                              (dayjs-format startDate)
                              "&end-date="
                              (dayjs-format endDate)))
          url (str "/api/sleep?" query-params)]
-     {:fx [[:dispatch [:http {:url url
+     {:db (assoc-in db [::sleep :dates] dates)
+      :fx [[:dispatch [:http {:url url
                               :method :get
                               :headers {"Authorization" (str "Bearer " token)}
                               :on-success [::get-sleeps-success]
-                              :on-failure [:http-failure]}]]]})))
+                              :on-failure [:http-failure]}]]
+           [:dispatch [::ui/set-dialog :loading]]]})))
+
+(rf/reg-event-fx
+ ::open-entry-form
+ (fn [_ [_ date]]
+   {:fx [[:dispatch [::ui/set-dialog :entry]]
+         (when date [:dispatch [::select-sleep-date date]])]}))
+
+(rf/reg-event-fx
+ ::select-sleep-date
+ (fn [{:keys [db]} [_ date]]
+   (let [token (get-in db [::auth/auth :account :account/token])
+         url (str "/api/sleep/" date)]
+     {:fx [[:dispatch [:http {:url url
+                              :method :get
+                              :headers {"Authorization" (str "Bearer " token)}
+                              :on-success [::select-sleep-date-success date]
+                              :on-failure [::select-sleep-date-failure date]}]]]})))
+
+(rf/reg-event-fx
+ ::get-sleeps-success
+ (fn [{:keys [db]} [_ {:keys [data]}]]
+   {:db (assoc-in db [::sleep :data] (map format-sleep data))
+    :fx [[:dispatch [::ui/close-dialog]]]}))
 
 (rf/reg-event-db
- ::get-sleeps-success
- (fn [db [_ {:keys [data]}]]
-   (assoc-in db [::sleep :data] (map format-sleep data))))
+ ::select-sleep-date-success
+ (fn [db [_ date _]]
+   (-> db
+       (assoc-in [::sleep :form :sleep-date] date)
+       (assoc-in [::sleep :form :method] :put))))
+
+(rf/reg-event-db
+ ::select-sleep-date-failure
+ (fn [db [_ date _]]
+   (-> db
+       (assoc-in [::sleep :form :sleep-date] date)
+       (assoc-in [::sleep :form :method] :post))))
 
 (rf/reg-event-db
  ::set-entry-form
@@ -47,10 +88,15 @@
 
 (rf/reg-event-fx
  ::submit-entry-form
- (fn [{:keys [db]} [_ data]]
-   (let [token (get-in db [::auth/auth :account :account/token])]
-     {:fx [[:dispatch [:http {:url "/api/sleep"
-                              :method :post
+ (fn [{:keys [db]} [_ {:keys [method] :as data}]]
+   (let [token (get-in db [::auth/auth :account :account/token])
+         data (select-keys data [:sleep-date :start-time :end-time])
+         url "/api/sleep"
+         url (if (= method :put)
+               (str url "/" (:sleep-date data))
+               url)]
+     {:fx [[:dispatch [:http {:url url
+                              :method method
                               :headers {"Authorization" (str "Bearer " token)}
                               :data data
                               :on-success [::submit-entry-form-success]
@@ -58,9 +104,14 @@
 
 (rf/reg-event-fx
  ::submit-entry-form-success
- (fn [_ [_ response]]
-   (js/console.log response)
-   {:fx [[:dispatch [::ui/close-dialog]]]}))
+ (fn [_ [_ _]]
+   {:fx [[:dispatch [::ui/set-dialog :confirm]]]}))
+
+(rf/reg-event-fx
+ ::close-dialog
+ (fn [{:keys [db]} [_ _]]
+   {:db (assoc-in db [::sleep :form] initial-form)
+    :fx [[:dispatch [::get-sleeps]]]}))
 
 (rf/reg-sub
  ::entry-form

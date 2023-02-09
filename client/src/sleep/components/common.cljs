@@ -5,7 +5,7 @@
    font-medium border border-gray-300 px-4 py-2 text-sm rounded-md
    focus:ring-2 focus:ring-offset-2 focus:ring-blue-500")
 
-(defn form-input [{:keys [id class type label value on-change required?]}]
+(defn form-input [{:keys [id class type label value on-change required? disabled?]}]
   (let [input-class "form-input relative transition-all duration-300 
                      w-full border-gray-300 
                      rounded-lg tracking-wide
@@ -21,4 +21,5 @@
               :id id
               :value value
               :on-change on-change
-              :required required?}]]))
+              :required required?
+              :disabled disabled?}]]))

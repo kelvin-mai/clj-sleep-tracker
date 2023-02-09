@@ -5,6 +5,7 @@
             [sleep.components.dialogs :refer [dialog]]
             [sleep.components.stats :refer [stats]]
             [sleep.db.auth :as auth]
+            [sleep.db.sleep :as sleep]
             [sleep.db.ui :as ui]))
 
 (defn navbar []
@@ -21,7 +22,7 @@
    [:h1 {:class "text-4xl text-center mb-4"}
     "Daily Sleep Tracker"]
    [:button {:class "rounded-lg bg-indigo-500 text-white px-4 py-2 hover:bg-indigo-600 mx-auto flex items-center"
-             :on-click #(rf/dispatch [::ui/set-dialog :entry])}
+             :on-click #(rf/dispatch [::sleep/open-entry-form])}
     [:> PlusIcon {:class "fill-white inline-block w-6 h-6"}]
     " New Entry"]])
 
@@ -29,7 +30,7 @@
   (let [account @(rf/subscribe [::auth/account])]
     [:div {:class "bg-slate-300"}
      [navbar]
-     [:section {:class "bg-white mx-auto pt-4 h-screen md:mt-4 md:border md:w-5/6 md:rounded-md md:shadow"}
+     [:section {:class "bg-white mx-auto pt-4 min-h-screen md:mt-4 md:border md:w-5/6 md:rounded-md md:shadow"}
       [header]
       (when account
         [stats])]
