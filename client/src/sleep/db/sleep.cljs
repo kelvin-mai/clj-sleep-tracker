@@ -105,7 +105,23 @@
 (rf/reg-event-fx
  ::submit-entry-form-success
  (fn [_ [_ _]]
-   {:fx [[:dispatch [::ui/set-dialog :confirm]]]}))
+   {:fx [[:dispatch [::ui/set-dialog :confirm-entry]]]}))
+
+(rf/reg-event-fx
+ ::delete-sleep-date
+ (fn [{:keys [db]} [_ date]]
+   (let [token (get-in db [::auth/auth :account :account/token])
+         url (str "/api/sleep/" date)]
+     {:fx [[:dispatch [:http {:url url
+                              :method :delete
+                              :headers {"Authorization" (str "Bearer " token)}
+                              :on-success [::delete-sleep-date-success]
+                              :on-failure [:http-failure]}]]]})))
+
+(rf/reg-event-fx
+ ::delete-sleep-date-success
+ (fn [_ _]
+   {:fx [[:dispatch [::ui/set-dialog :confirm-delete]]]}))
 
 (rf/reg-event-fx
  ::close-dialog

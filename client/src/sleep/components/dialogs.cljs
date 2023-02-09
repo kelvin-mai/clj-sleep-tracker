@@ -4,7 +4,7 @@
             [sleep.utils :refer [render-children]]
             [sleep.components.auth :refer [auth-form logout-dialog]]
             [sleep.components.common :refer [button-class]]
-            [sleep.components.entry :refer [entry-form confirm-entry]]
+            [sleep.components.entry :refer [entry-form confirm-entry confirm-delete]]
             [sleep.db.ui :as ui]))
 
 (def Panel (.-Panel Dialog))
@@ -23,8 +23,10 @@
            :description "Create or edit sleep at a given date."}
    :logout {:title "Log out?"
             :description "Do you want to leave the application?"}
-   :confirm {:title "Confirm submission"
-             :description "Sleep entry submission successful."}})
+   :confirm-entry {:title "Confirm submission"
+                   :description "Sleep entry submission successful."}
+   :confirm-delete {:title "Confirm deletion"
+                    :description "Sleep entry successfully deleted."}})
 
 (defn dialog-overlay []
   [:> TransitionChild {:enter "ease-out duration-300"
@@ -79,5 +81,6 @@
          :logout [logout-dialog]
          :error [error-dialog]
          :entry [entry-form]
-         :confirm [confirm-entry]
+         :confirm-entry [confirm-entry]
+         :confirm-delete [confirm-delete]
          nil)]]]))

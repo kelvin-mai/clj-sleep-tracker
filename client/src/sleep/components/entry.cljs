@@ -1,5 +1,7 @@
 (ns sleep.components.entry
   (:require [re-frame.core :as rf]
+            ["@heroicons/react/24/solid" :refer [CheckCircleIcon
+                                                 PlusCircleIcon]]
             [sleep.db.sleep :as sleep]
             [sleep.components.common :refer [form-input button-class]]))
 
@@ -8,14 +10,25 @@
    :start-time "Start Time"
    :end-time "End Time"})
 
+(defn confirm-delete []
+  [:button {:class (str button-class " bg-indigo-500 text-white hover:bg-indigo-600")
+            :on-click #(rf/dispatch [::sleep/close-dialog])}
+   "Confirm"])
+
 (defn confirm-entry []
   (let [{:keys [method]
-         :as entry} @(rf/subscribe [::sleep/entry-form])]
-    [:div {:class "mt-2"}
-     [:h4 {:class "text-center font-bold"}
-      (str "Data " (if (= method :post)
-                     "created"
-                     "updated"))]
+         :as entry} @(rf/subscribe [::sleep/entry-form])
+        action (if (= method :post)
+                 "created"
+                 "updated")
+        action-icon (if (= action "created")
+                      CheckCircleIcon
+                      PlusCircleIcon)]
+    [:<>
+     [:div {:class "bg-green-100 rounded-lg py-2 text-base text-green-700 w-full"}
+      [:p {:class "flex items-center justify-center"}
+       [:> action-icon {:class "w-6 h-6 mr-2 inline-block"}]
+       (str "Data " action)]]
      [:div {:class "my-2"}
       (map (fn [k]
              ^{:key k}

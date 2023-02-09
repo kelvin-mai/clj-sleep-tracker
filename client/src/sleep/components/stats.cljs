@@ -55,7 +55,7 @@
          [:div {:class "flex justify-around"}
           [:button {:on-click #(rf/dispatch [::sleep/open-entry-form (:sleep/sleep-date row)])}
            [:> PencilSquareIcon {:class "fill-teal-500 w-4 h-4"}]]
-          [:button
+          [:button {:on-click #(rf/dispatch [::sleep/delete-sleep-date (:sleep/sleep-date row)])}
            [:> TrashIcon {:class "fill-rose-400 w-4 h-4"}]]]]])
      data)]])
 
