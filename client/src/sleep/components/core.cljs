@@ -20,11 +20,7 @@
 (defn header []
   [:<>
    [:h1 {:class "text-4xl text-center mb-4"}
-    "Daily Sleep Tracker"]
-   [:button {:class "rounded-lg bg-indigo-500 text-white px-4 py-2 hover:bg-indigo-600 mx-auto flex items-center"
-             :on-click #(rf/dispatch [::sleep/open-entry-form])}
-    [:> PlusIcon {:class "fill-white inline-block w-6 h-6"}]
-    " New Entry"]])
+    "Daily Sleep Tracker"]])
 
 (defn app []
   (let [account @(rf/subscribe [::auth/account])]
@@ -33,5 +29,10 @@
      [:section {:class "bg-white mx-auto pt-4 min-h-screen md:mt-4 md:border md:w-5/6 md:rounded-md md:shadow"}
       [header]
       (when account
-        [stats])]
+        [:<>
+         [:button {:class "rounded-lg bg-indigo-500 text-white px-4 py-2 hover:bg-indigo-600 mx-auto flex items-center"
+                   :on-click #(rf/dispatch [::sleep/open-entry-form])}
+          [:> PlusIcon {:class "fill-white inline-block w-6 h-6"}]
+          " New Entry"]
+         [stats]])]
      [dialog]]))
