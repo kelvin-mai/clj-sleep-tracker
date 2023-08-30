@@ -15,7 +15,6 @@ This project uses the [Clojure CLI](https://clojure.org/guides/deps_and_cli) as 
   - [hikari-cp](https://github.com/tomekw/hikari-cp) - jdbc connection pool
 - routing
   - [reitit](https://github.com/metosin/reitit) - data driven routing library
-  - [swagger](https://swagger.io/) - api documentation
   - [malli](https://github.com/metosin/malli) - schema definitions and coercion
 - utility
   - [integrant](https://github.com/weavejester/integrant) - clojure state management
@@ -24,6 +23,7 @@ This project uses the [Clojure CLI](https://clojure.org/guides/deps_and_cli) as 
   - [re-frame](http://day8.github.io/re-frame/) - state management system
   - [tailwindcss](https://tailwindcss.com/) - utility css framework
   - [headless ui](https://headlessui.com/) - unstyled utility components
+  - [recharts](https://recharts.org/en-US/) - react charting library
 
 ## Usage
 
