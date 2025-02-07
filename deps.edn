@@ -1,0 +1,7 @@
+{:paths   ["src/clj" "resources"]
+ :deps    {org.clojure/clojure {:mvn/version "1.10.1"}}
+ :aliases {:server {:main-opts ["-m" "sleep.core"]}}
+ :dev     {:extra-paths ["dev"]
+           :extra-deps  {nrepl/nrepl       {:mvn/version "0.8.3"}
+                         cider/cider-nrepl {:mvn/version "0.22.0"}}
+           :main-opts   ["-m" "nrepl.cmdline" "--middleware" "[cider.nrepl/cider-middleware]"]}}
