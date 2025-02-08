@@ -1,13 +1,14 @@
-(ns sleep.api.routes)
+(ns sleep.api.routes
+  (:require [sleep.api.auth.handler :as auth]))
 
 (def health-route
   ["/"
    {:name ::health-check
-    :get (fn [request]
-    (println (:uri request))
+    :get (fn [_]
            {:status 200
             :body {:success true}})}])
 
 (def api-routes
   [["/api"
-    health-route]])
+    health-route
+    auth/routes]])

@@ -23,5 +23,11 @@
   (halt)
   (restart)
   state/system
+  (->> (router {:request-method :post
+                :body-params    {:email    "me@kelvinmai.io"
+                                 :password "password"}
+                :uri            "/api/auth/login"})
+       :body
+       (muuntaja.core/decode "application/json"))
   ;
   )
