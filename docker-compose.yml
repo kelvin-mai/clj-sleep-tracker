@@ -1,0 +1,11 @@
+services:
+  db:
+    container_name: sleep_db
+    image: postgres:14
+    ports:
+      - 5432:5432
+    volumes:
+      - ./resources/sql/:/docker-entrypoint-initdb.d/
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sleep_db

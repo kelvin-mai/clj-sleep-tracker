@@ -1,0 +1,12 @@
+{:system/config {:http-port  #or [#env PORT 8080]
+                 :jwt-secret #or [#env JWT_SECRET "super-secret-key"]
+                 :db         {:adapter       "postgresql"
+                              :server-name   #or [#env POSTGRES_HOST "localhost"]
+                              :database-name #or [#env POSTGRES_DB "sleep_db"]
+                              :username      #or [#env POSTGRES_USER "postgres"]
+                              :password      #or [#env POSTGRES_PASSWORD "postgres"]}}
+ :postgres/db   {:config #ig/ref :system/config}
+ :reitit/router {:config #ig/ref :system/config
+                 :db     #ig/ref :postgres/db}
+ :http/server   {:config #ig/ref :system/config
+                 :router #ig/ref :reitit/router}}
