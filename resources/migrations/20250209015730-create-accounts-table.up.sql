@@ -1,4 +1,4 @@
-create table if not exists users (
+create table if not exists accounts (
   id text not null primary key default nanoid(),
   email text not null unique,
   password text not null,
@@ -6,8 +6,8 @@ create table if not exists users (
   updated_at timestamptz
 );
 --;;
-create trigger users_updated_at_trigger
-  before update on users
+create trigger accounts_updated_at_trigger
+  before update on accounts
   for each row
   execute procedure moddatetime(updated_at);
 --;;

@@ -1,6 +1,8 @@
 (ns sleep.system.router
   (:require [integrant.core :as ig]
             [muuntaja.core :as m]
+            [buddy.auth.backends :as backends]
+            [buddy.auth.middleware :refer [wrap-authentication]]
             [reitit.ring :as ring]
             [reitit.coercion.malli]
             [reitit.ring.coercion :as coercion]
@@ -29,6 +31,9 @@
                             :access-control-allow-methods [:get :post :put :delete :options]
                             :access-control-allow-headers [:content-type :authorization]]
                            exception/exception-middleware
+                           [wrap-authentication (backends/jws {:secret     jwt-secret
+                                                               :token-name "Bearer"
+                                                               :options    {:skip-validation true}})]
                            coercion/coerce-response-middleware
                            coercion/coerce-request-middleware
                            middlewares/wrap-env]}})
