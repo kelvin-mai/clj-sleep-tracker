@@ -5,3 +5,9 @@
   [:map
    [:email non-blank-string?]
    [:password non-blank-string?]])
+
+(def login-body register-body)
+
+(def refresh-access-token-body
+  [:map
+   [:refresh-token non-blank-string?]])

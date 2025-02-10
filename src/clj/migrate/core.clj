@@ -28,5 +28,5 @@
 
 (comment
   (create-config (get-datasource :dev))
-  (create-migration {:name "create-users-table"})
+  (create-migration {:name "create-refresh-tokens-table"})
   (migrate nil))

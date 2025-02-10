@@ -32,8 +32,7 @@
                             :access-control-allow-headers [:content-type :authorization]]
                            exception/exception-middleware
                            [wrap-authentication (backends/jws {:secret     jwt-secret
-                                                               :token-name "Bearer"
-                                                               :options    {:skip-validation true}})]
+                                                               :token-name "Bearer"})]
                            coercion/coerce-response-middleware
                            coercion/coerce-request-middleware
                            middlewares/wrap-env]}})
