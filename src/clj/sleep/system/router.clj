@@ -9,6 +9,7 @@
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
             [ring.middleware.cors :refer [wrap-cors]]
+            [sleep.router.coercion :as router.coercion]
             [sleep.router.exception :as exception]
             [sleep.router.middleware :as middlewares]
             [sleep.api.routes :refer [api-routes]]))
@@ -23,7 +24,7 @@
       {:data {:env        {:db         db
                            :jwt-secret jwt-secret}
               :muuntaja   m/instance
-              :coercion   reitit.coercion.malli/coercion
+              :coercion   router.coercion/coercion
               :middleware [parameters/parameters-middleware
                            muuntaja/format-middleware
                            [wrap-cors

@@ -28,5 +28,7 @@
 
 (comment
   (create-config (get-datasource :dev))
-  (create-migration {:name "create-refresh-tokens-table"})
-  (migrate nil))
+  (create-migration {:name "create-sleeps-table"})
+  (migrate nil)
+  (migratus/down (create-config (get-datasource :dev))
+                 20250210221333))

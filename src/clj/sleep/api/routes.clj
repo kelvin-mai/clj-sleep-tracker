@@ -1,5 +1,6 @@
 (ns sleep.api.routes
-  (:require [sleep.api.accounts.handler :as accounts]))
+  (:require [sleep.api.accounts.handler :as accounts]
+            [sleep.api.sleeps.handler :as sleeps]))
 
 (def health-route
   ["/"
@@ -11,4 +12,5 @@
 (def api-routes
   [["/api"
     health-route
-    accounts/routes]])
+    accounts/routes
+    sleeps/routes]])

@@ -3,7 +3,8 @@
             [buddy.sign.jwt :as jwt]
             [tick.core :as t]
             [sleep.api.accounts.db :as accounts.db]
-            [sleep.utils.time :refer [duration->instant]]))
+            [sleep.utils.time :refer [duration->instant]]
+            [sleep.utils.maps :refer [map->ns-map]]))
 
 (defn generate-initial-claims [sub]
   {:sub sub
@@ -31,5 +32,6 @@
                                                                {:token      refresh-token
                                                                 :expires-at (t/date-time refresh-expires-at)})]
     (when stored-refresh-token
-      {:refresh-token refresh-token
-       :access-token  (generate-access-token (:refresh-tokens/id stored-refresh-token) sub secret)})))
+      (map->ns-map "tokens"
+                   {:refresh-token refresh-token
+                    :access-token  (generate-access-token (:refresh-tokens/id stored-refresh-token) sub secret)}))))

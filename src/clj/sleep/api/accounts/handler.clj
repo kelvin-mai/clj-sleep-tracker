@@ -6,7 +6,8 @@
                                               generate-access-token]]
             [sleep.router.middleware :refer [wrap-authorization]]
             [sleep.router.response :as response]
-            [sleep.router.exception :as exception]))
+            [sleep.router.exception :as exception]
+            [sleep.utils.maps :refer [map->ns-map]]))
 
 (defn register
   [{:keys [parameters env]}]
@@ -16,8 +17,7 @@
         account                 (accounts.db/create-account! db data)]
     (response/created (-> account
                           (dissoc :accounts/password)
-                          (assoc :accounts/tokens
-                                 (generate-tokens! db
+                          (merge (generate-tokens! db
                                                    (:accounts/id account)
                                                    jwt-secret))))))
 
@@ -33,8 +33,7 @@
     (if account
       (response/ok (-> account
                        (dissoc :accounts/password)
-                       (assoc :accounts/tokens
-                              (generate-tokens! db
+                       (merge (generate-tokens! db
                                                 (:accounts/id account)
                                                 jwt-secret))))
       (exception/response 403 "Invalid credentials" request))))
@@ -42,17 +41,14 @@
 (defn check-identity
   [{:keys [identity env]
     :as   request}]
-  (let [{:keys [db
-                jwt-secret]} env
-        id                      (:id identity)
-        ;; account                 (accounts.db/get-account-by-id db id)
-        ]
-    (response/ok identity)
-    #_(if account
-        (response/ok (-> account
-                         (dissoc :accounts/password)
-                         (assoc :accounts/claims identity)))
-        (exception/response 403 "Invalid credentials" request))))
+  (let [{:keys [db]} env
+        id           (:id identity)
+        account      (accounts.db/get-account-by-id db id)]
+    (if account
+      (response/ok (-> account
+                       (dissoc :accounts/password)
+                       (merge (map->ns-map "claims" identity))))
+      (exception/response 403 "Invalid credentials" request))))
 
 (defn logout
   [{:keys [identity env]}]
