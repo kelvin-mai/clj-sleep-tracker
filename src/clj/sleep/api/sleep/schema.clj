@@ -1,4 +1,4 @@
-(ns sleep.api.sleeps.schema
+(ns sleep.api.sleep.schema
   (:require [malli.util :as mu]
             [sleep.utils.schema :refer [date?
                                         time?]]))

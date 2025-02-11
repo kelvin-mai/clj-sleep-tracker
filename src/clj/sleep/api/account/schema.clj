@@ -1,4 +1,4 @@
-(ns sleep.api.accounts.schema
+(ns sleep.api.account.schema
   (:require [sleep.utils.schema :refer [non-blank-string?]]))
 
 (def register-body

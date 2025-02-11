@@ -38,7 +38,7 @@
   (->> (router {:request-method :post
                 :body-params    {:email    "me@kelvinmai.io"
                                  :password "password"}
-                :uri            "/api/accounts/login"})
+                :uri            "/api/account/login"})
        :body
        (muuntaja.core/decode "application/json"))
   ;

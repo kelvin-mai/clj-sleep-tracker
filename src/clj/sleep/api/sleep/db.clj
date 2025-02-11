@@ -1,28 +1,28 @@
-(ns sleep.api.sleeps.db
+(ns sleep.api.sleep.db
   (:require [sleep.utils.db :as db]))
 
 (defn get-sleeps [db account-id]
   (db/query! db
              {:select [:*]
-              :from   [:sleeps]
+              :from   [:sleep]
               :where  [:= :account-id account-id]}))
 
 (defn create-sleep! [db data]
   (db/query-one! db
-                 {:insert-into [:sleeps]
+                 {:insert-into [:sleep]
                   :values      [data]}))
 
 (defn get-sleep-by-date [db {:keys [date account-id]}]
   (db/query-one! db
                  {:select [:*]
-                  :from   [:sleeps]
+                  :from   [:sleep]
                   :where  [:and
                            [:= :sleep-date date]
                            [:= :account-id account-id]]}))
 
 (defn update-sleep! [db {:keys [date account-id]} data]
   (db/query-one! db
-                 {:update [:sleeps]
+                 {:update [:sleep]
                   :set    data
                   :where  [:and
                            [:= :sleep-date date]
@@ -30,7 +30,7 @@
 
 (defn delete-sleep! [db {:keys [date account-id]}]
   (db/query-one! db
-                 {:delete-from [:sleeps]
+                 {:delete-from [:sleep]
                   :where       [:and
                                 [:= :sleep-date date]
                                 [:= :account-id account-id]]}))

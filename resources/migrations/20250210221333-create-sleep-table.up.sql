@@ -1,5 +1,5 @@
-create table sleeps (
-  account_id text not null references accounts(id),
+create table sleep (
+  account_id text not null references account(id),
   sleep_date date not null default now(),
   start_time time not null,
   end_time time not null,
@@ -13,8 +13,8 @@ create table sleeps (
   primary key (account_id, sleep_date)
 );
 --;;
-create trigger sleeps_updated_at_trigger
-  before update on sleeps
+create trigger sleep_updated_at_trigger
+  before update on sleep
   for each row
   execute procedure moddatetime(updated_at);
 --;;
