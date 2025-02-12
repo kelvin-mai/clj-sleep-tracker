@@ -6,6 +6,12 @@
             [sleep.utils.time :refer [duration->instant]]
             [sleep.utils.maps :refer [map->ns-map]]))
 
+(defn sanitize-account [account]
+  (dissoc account
+          :account/password
+          :account/verification-code
+          :account/verification-code-expiration))
+
 (defn generate-initial-claims [sub]
   {:sub sub
    :iat (t/instant)})
@@ -24,13 +30,13 @@
 
 (defn generate-tokens! [db sub secret]
   (let [initial-claims       (generate-initial-claims sub)
-        refresh-expires-at   (duration->instant 24 :hours)
+        refresh-expiration   (duration->instant 24 :hours)
         refresh-claims       (assoc initial-claims :exp
-                                    refresh-expires-at)
+                                    refresh-expiration)
         refresh-token        (jwt/sign refresh-claims secret)
         stored-refresh-token (account.db/store-refresh-token! db
                                                               {:token      refresh-token
-                                                               :expires-at (t/date-time refresh-expires-at)})]
+                                                               :expiration (t/date-time refresh-expiration)})]
     (when stored-refresh-token
       (map->ns-map "tokens"
                    {:refresh-token refresh-token

@@ -6,15 +6,23 @@
                                              generate-access-token]]
             [sleep.router.middleware :refer [wrap-authorization]]
             [sleep.router.response :as response]
-            [sleep.router.exception :as exception]
             [sleep.utils.maps :refer [map->ns-map]]))
 
 (defn register
   [{:keys [parameters env]}]
   (let [{:keys [db
-                jwt-secret]} env
+                jwt-secret
+                mailer]} env
         data                    (:body parameters)
-        account                 (account.db/create-account! db data)]
+        account                 (account.db/create-account! db data)
+        _                       (when account
+                                  (.send! mailer
+                                          {:from    "noreply@sleep.com"
+                                           :to      (:account/email account)
+                                           :subject "Welcome to Sleep"
+                                           :body    (str "Welcome to Sleep. Please verify your email. Please click on the link to verify your email."
+                                                         "link: http://localhost:8080/api/account/verify/"
+                                                         (:account/id account) "/" (:account/verification-code account))}))]
     (response/created (-> account
                           (dissoc :account/password)
                           (merge (generate-tokens! db
@@ -22,8 +30,7 @@
                                                    jwt-secret))))))
 
 (defn login
-  [{:keys [parameters env]
-    :as   request}]
+  [{:keys [parameters env]}]
   (let [{:keys [db
                 jwt-secret]}  env
         {:keys [email
@@ -36,11 +43,11 @@
                        (merge (generate-tokens! db
                                                 (:account/id account)
                                                 jwt-secret))))
-      (exception/response 403 "Invalid credentials" request))))
+      (throw (ex-info "Invalid credentials" {:status 403
+                                             :type ::invalid-credentials})))))
 
 (defn check-identity
-  [{:keys [identity env]
-    :as   request}]
+  [{:keys [identity env]}]
   (let [{:keys [db]} env
         id           (:sub identity)
         account      (account.db/get-account-by-id db id)]
@@ -48,18 +55,18 @@
       (response/ok (-> account
                        (dissoc :account/password)
                        (merge (map->ns-map "claims" identity))))
-      (exception/response 403 "Invalid credentials" request))))
+      (throw (ex-info "Invalid credentials" {:status 403
+                                             :type ::invalid-credentials})))))
 
 (defn logout
   [{:keys [identity env]}]
   (let [{:keys [db]} env
         jti          (:jti identity)
         _            (account.db/delete-refresh-token! db jti)]
-    (response/ok {:success true})))
+    (response/ok {})))
 
 (defn refresh-access-token
-  [{:keys [identity parameters env]
-    :as   request}]
+  [{:keys [identity parameters env]}]
   (let [{:keys [db
                 jwt-secret]} env
         {:keys [jti
@@ -69,7 +76,44 @@
     (if refresh-token
       (response/ok (assoc refresh-token
                           :refresh-token/access-token (generate-access-token jti sub jwt-secret)))
-      (exception/response 403 "Invalid credentials" request))))
+      (throw (ex-info "Invalid credentials" {:status 403
+                                             :type ::invalid-credentials})))))
+
+(defn verify-account
+  [{:keys [parameters env]}]
+  (let [{:keys [db
+                jwt-secret]} env
+        {:keys [id
+                code]}       (:path parameters)
+        account              (account.db/verify-account! db id code)]
+    (if account
+      (response/ok (-> account
+                       (dissoc :account/password)
+                       (merge (generate-tokens! db
+                                                (:account/id account)
+                                                jwt-secret))))
+      (throw (ex-info "Invalid verification code" {:status 403
+                                                   :type   ::invalid-verification-code})))))
+
+(defn new-verify-code
+  [{:keys [parameters env]}]
+  (let [{:keys [db
+                mailer]} env
+        {:keys [email]}       (:path parameters)
+        account               (account.db/regenerate-verification-code! db email)
+        _                     (when account
+                                (.send! mailer
+                                        {:from    "noreply@sleep.com"
+                                         :to      (:account/email account)
+                                         :subject "We sent you a new verification code"
+                                         :body    (str "We sent you a new verification code. Please verify your email. Please click on the link to verify your email."
+                                                       "link: http://localhost:8080/api/account/verify/"
+                                                       (:account/id account) "/" (:account/verification-code account))}))]
+    (if account
+      (response/ok (-> account
+                       (dissoc :account/password)))
+      (throw (ex-info "Invalid credentials" {:status 403
+                                             :type   ::invalid-email})))))
 
 (def routes
   ["/account"
@@ -82,4 +126,8 @@
                      :handler    login}}]
    ["/refresh" {:middleware [wrap-authorization]
                 :post       {:parameters {:body account.schema/refresh-access-token-body}
-                             :handler    refresh-access-token}}]])
+                             :handler    refresh-access-token}}]
+   ["/reverify/:email" {:parameters {:path account.schema/reverify-path-params}
+                        :get        new-verify-code}]
+   ["/verify/:id/:code" {:parameters {:path account.schema/verify-path-params}
+                         :get        verify-account}]])

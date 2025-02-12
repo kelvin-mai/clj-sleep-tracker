@@ -2,7 +2,6 @@
   (:require [sleep.api.sleep.db :as sleep.db]
             [sleep.api.sleep.schema :as sleep.schema]
             [sleep.router.response :as response]
-            [sleep.router.exception :as exception]
             [sleep.router.middleware :refer [wrap-authorization]]))
 
 (defn get-sleeps
@@ -21,15 +20,17 @@
     (response/created sleep)))
 
 (defn get-sleep
-  [{:keys [parameters env identity]
-    :as   request}]
+  [{:keys [parameters env identity]}]
   (let [db    (:db env)
         ident {:account-id (:sub identity)
                :date       (get-in parameters [:path :date])}
         sleep (sleep.db/get-sleep-by-date db ident)]
     (if sleep
       (response/ok sleep)
-      (exception/response 404 "Resource not found" request))))
+      (throw (ex-info "Resource not found"
+                      {:status 404
+                       :type ::not-found})))))
+
 
 (defn update-sleep
   [{:keys [parameters env identity]}]
@@ -53,7 +54,7 @@
    ["" {:get  get-sleeps
         :post {:parameters {:body sleep.schema/create-body}
                :handler    create-sleep}}]
-   ["/:date" {:parameters {:path sleep.schema/path-param}
+   ["/:date" {:parameters {:path sleep.schema/date-path-param}
               :get        get-sleep
               :put        {:parameters {:body sleep.schema/update-body}
                            :handler    update-sleep}

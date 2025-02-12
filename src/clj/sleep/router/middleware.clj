@@ -1,7 +1,6 @@
 (ns sleep.router.middleware
   (:require [buddy.auth :refer [authenticated?]]
-            [sleep.router.exception :as exception]
-            [sleep.utils.time :refer [is-expired?]]))
+            [sleep.router.exception :as exception]))
 
 (def wrap-env
   {:name ::env
@@ -15,11 +14,8 @@
   {:name ::authorization
    :wrap
    (fn [handler]
-     (fn [{:keys [identity]
-           :as   request}]
+     (fn [request]
        (if (authenticated? request)
-         (let [exp (:exp identity)]
-           (if (is-expired? exp)
-             (handler request)
-             (exception/response 401 "Expired access token" request)))
-         (exception/response 401 "Unauthorized" request))))})
+         (handler request)
+         (throw (ex-info "Unauthorized" {:status 401
+                                         :type   ::exception/unauthorized})))))})

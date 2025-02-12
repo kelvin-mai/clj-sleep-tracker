@@ -28,7 +28,7 @@
 
 (comment
   (create-config (get-datasource :dev))
-  (create-migration {:name "create-sleeps-table"})
+  (create-migration {:name "add-email-verification-columns"})
   (migrate nil)
   (migratus/down (create-config (get-datasource :dev))
                  20250210221333))

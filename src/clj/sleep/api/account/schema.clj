@@ -20,3 +20,12 @@
 (def refresh-access-token-body
   [:map
    [:refresh-token non-blank-string?]])
+
+(def verify-path-params
+  [:map
+   [:id non-blank-string?]
+   [:code :uuid]])
+
+(def reverify-path-params
+  [:map
+   [:email non-blank-string?]])

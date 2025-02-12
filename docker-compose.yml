@@ -9,3 +9,10 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: sleep_db
+
+  smtp:
+    container_name: sleep_smtp
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025

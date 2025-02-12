@@ -3,7 +3,7 @@
             [sleep.utils.schema :refer [date?
                                         time?]]))
 
-(def path-param
+(def date-path-param
   [:map
    [:date date?]])
 

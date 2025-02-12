@@ -15,14 +15,15 @@
             [sleep.api.routes :refer [api-routes]]))
 
 (defmethod ig/init-key :reitit/router
-  [_ {:keys [db config]}]
+  [_ {:keys [db config mailer]}]
   (let [jwt-secret (:jwt-secret config)]
     (println "initializing routes")
     (ring/ring-handler
      (ring/router
       api-routes
       {:data {:env        {:db         db
-                           :jwt-secret jwt-secret}
+                           :jwt-secret jwt-secret
+                           :mailer     mailer}
               :muuntaja   m/instance
               :coercion   router.coercion/coercion
               :middleware [parameters/parameters-middleware

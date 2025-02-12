@@ -1,36 +1,36 @@
 (ns sleep.api.sleep.db
-  (:require [sleep.utils.db :as db]))
+  (:require [sleep.utils.query :as q]))
 
 (defn get-sleeps [db account-id]
-  (db/query! db
-             {:select [:*]
-              :from   [:sleep]
-              :where  [:= :account-id account-id]}))
+  (q/query! db
+            {:select [:*]
+             :from   [:sleep]
+             :where  [:= :account-id account-id]}))
 
 (defn create-sleep! [db data]
-  (db/query-one! db
-                 {:insert-into [:sleep]
-                  :values      [data]}))
+  (q/query-one! db
+                {:insert-into [:sleep]
+                 :values      [data]}))
 
 (defn get-sleep-by-date [db {:keys [date account-id]}]
-  (db/query-one! db
-                 {:select [:*]
-                  :from   [:sleep]
-                  :where  [:and
-                           [:= :sleep-date date]
-                           [:= :account-id account-id]]}))
+  (q/query-one! db
+                {:select [:*]
+                 :from   [:sleep]
+                 :where  [:and
+                          [:= :sleep-date date]
+                          [:= :account-id account-id]]}))
 
 (defn update-sleep! [db {:keys [date account-id]} data]
-  (db/query-one! db
-                 {:update [:sleep]
-                  :set    data
-                  :where  [:and
-                           [:= :sleep-date date]
-                           [:= :account-id account-id]]}))
+  (q/query-one! db
+                {:update [:sleep]
+                 :set    data
+                 :where  [:and
+                          [:= :sleep-date date]
+                          [:= :account-id account-id]]}))
 
 (defn delete-sleep! [db {:keys [date account-id]}]
-  (db/query-one! db
-                 {:delete-from [:sleep]
-                  :where       [:and
-                                [:= :sleep-date date]
-                                [:= :account-id account-id]]}))
+  (q/query-one! db
+                {:delete-from [:sleep]
+                 :where       [:and
+                               [:= :sleep-date date]
+                               [:= :account-id account-id]]}))

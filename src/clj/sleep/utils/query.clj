@@ -1,4 +1,4 @@
-(ns sleep.utils.db
+(ns sleep.utils.query
   (:require [honey.sql :as sql]
             [next.jdbc :as jdbc]
             [next.jdbc.result-set :as rs]))
