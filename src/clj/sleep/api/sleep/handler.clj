@@ -2,7 +2,8 @@
   (:require [sleep.api.sleep.db :as sleep.db]
             [sleep.api.sleep.schema :as sleep.schema]
             [sleep.router.response :as response]
-            [sleep.router.middleware :refer [wrap-authorization]]))
+            [sleep.router.middleware :refer [wrap-authorization]]
+            [sleep.router.exception :as exception]))
 
 (defn get-sleeps
   [{:keys [env identity]}]
@@ -17,7 +18,9 @@
         data         (assoc (:body parameters)
                             :account-id (:sub identity))
         sleep        (sleep.db/create-sleep! db data)]
-    (response/created sleep)))
+    (if sleep
+      (response/created sleep)
+      (exception/throw-exception "Resource not found" 404 :not-found))))
 
 (defn get-sleep
   [{:keys [parameters env identity]}]
@@ -27,9 +30,7 @@
         sleep (sleep.db/get-sleep-by-date db ident)]
     (if sleep
       (response/ok sleep)
-      (throw (ex-info "Resource not found"
-                      {:status 404
-                       :type ::not-found})))))
+      (exception/throw-exception "Resource not found" 404 :not-found))))
 
 
 (defn update-sleep
@@ -39,7 +40,9 @@
                :date       (get-in parameters [:path :date])}
         data  (:body parameters)
         sleep (sleep.db/update-sleep! db ident data)]
-    (response/ok sleep)))
+    (if sleep
+      (response/ok sleep)
+      (exception/throw-exception "Resource not found" 404 :not-found))))
 
 (defn delete-sleep
   [{:keys [parameters env identity]}]
@@ -47,7 +50,9 @@
         ident        {:account-id (:sub identity)
                       :date       (get-in parameters [:path :date])}
         sleep        (sleep.db/delete-sleep! db ident)]
-    (response/ok sleep)))
+    (if sleep
+      (response/ok sleep)
+      (exception/throw-exception "Resource not found" 404 :not-found))))
 
 (def routes
   ["/sleep" {:middleware [wrap-authorization]}

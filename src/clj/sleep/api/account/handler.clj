@@ -6,7 +6,8 @@
                                              generate-access-token]]
             [sleep.router.middleware :refer [wrap-authorization]]
             [sleep.router.response :as response]
-            [sleep.utils.maps :refer [map->ns-map]]))
+            [sleep.utils.maps :refer [map->ns-map]]
+            [sleep.router.exception :as exception]))
 
 (defn register
   [{:keys [parameters env]}]
@@ -43,8 +44,7 @@
                        (merge (generate-tokens! db
                                                 (:account/id account)
                                                 jwt-secret))))
-      (throw (ex-info "Invalid credentials" {:status 403
-                                             :type ::invalid-credentials})))))
+      (exception/throw-exception "Invalid credentials" 403 :invalid-credentials))))
 
 (defn check-identity
   [{:keys [identity env]}]
@@ -55,8 +55,7 @@
       (response/ok (-> account
                        (dissoc :account/password)
                        (merge (map->ns-map "claims" identity))))
-      (throw (ex-info "Invalid credentials" {:status 403
-                                             :type ::invalid-credentials})))))
+      (exception/throw-exception "Invalid credentials" 403 :invalid-credentials))))
 
 (defn logout
   [{:keys [identity env]}]
@@ -76,8 +75,7 @@
     (if refresh-token
       (response/ok (assoc refresh-token
                           :refresh-token/access-token (generate-access-token jti sub jwt-secret)))
-      (throw (ex-info "Invalid credentials" {:status 403
-                                             :type ::invalid-credentials})))))
+      (exception/throw-exception "Invalid refresh token" 403 :invalid-refresh-token))))
 
 (defn verify-account
   [{:keys [parameters env]}]
@@ -92,8 +90,7 @@
                        (merge (generate-tokens! db
                                                 (:account/id account)
                                                 jwt-secret))))
-      (throw (ex-info "Invalid verification code" {:status 403
-                                                   :type   ::invalid-verification-code})))))
+      (exception/throw-exception "Invalid verification code" 403 :invalid-verification-code))))
 
 (defn new-verify-code
   [{:keys [parameters env]}]
@@ -112,8 +109,7 @@
     (if account
       (response/ok (-> account
                        (dissoc :account/password)))
-      (throw (ex-info "Invalid credentials" {:status 403
-                                             :type   ::invalid-email})))))
+      (exception/throw-exception "Invalid credentials" 403 :invalid-credentials))))
 
 (def routes
   ["/account"

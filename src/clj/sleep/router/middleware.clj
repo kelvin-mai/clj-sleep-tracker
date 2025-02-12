@@ -17,5 +17,4 @@
      (fn [request]
        (if (authenticated? request)
          (handler request)
-         (throw (ex-info "Unauthorized" {:status 401
-                                         :type   ::exception/unauthorized})))))})
+         (exception/throw-exception "Unauthorized" 401 :unauthorized))))})

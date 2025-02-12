@@ -31,6 +31,15 @@
               {:exception (.getClass exception)
                :data      (coercion/encode-error (ex-data exception))})))
 
+(defn throw-exception
+  ([message] (throw-exception message 500 ::default))
+  ([message status] (throw-exception message status ::default))
+  ([message status type]
+   (let [n (namespace ::default)
+         type (keyword n (name type))]
+     (throw (ex-info message {:status status
+                              :type type})))))
+
 (def exception-middleware
   (exception/create-exception-middleware
    {::exception/default          (handle-exception 500 "Internal Server Error")
