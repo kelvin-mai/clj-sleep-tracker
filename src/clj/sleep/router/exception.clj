@@ -50,3 +50,8 @@
     ::exception/wrap             (fn [handler e request]
                                    (println e (:uri request))
                                    (handler e request))}))
+
+(def default-handlers
+  {:not-found (handle-exception 404 "Not Found")
+   :method-not-allowed (handle-exception 405 "Method Not Allowed")
+   :not-acceptable (handle-exception 401 "Not acceptable")})

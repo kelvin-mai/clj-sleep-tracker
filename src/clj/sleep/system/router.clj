@@ -1,17 +1,11 @@
 (ns sleep.system.router
   (:require [integrant.core :as ig]
             [muuntaja.core :as m]
-            [buddy.auth.backends :as backends]
-            [buddy.auth.middleware :refer [wrap-authentication]]
             [reitit.ring :as ring]
             [reitit.coercion.malli]
-            [reitit.ring.coercion :as coercion]
-            [reitit.ring.middleware.muuntaja :as muuntaja]
-            [reitit.ring.middleware.parameters :as parameters]
-            [ring.middleware.cors :refer [wrap-cors]]
-            [sleep.router.coercion :as router.coercion]
-            [sleep.router.exception :as exception]
-            [sleep.router.middleware :as middlewares]
+            [sleep.router.coercion :refer [coercion]]
+            [sleep.router.middleware :refer [create-global-middleware]]
+            [sleep.router.exception :refer [default-handlers]]
             [sleep.api.routes :refer [api-routes]]))
 
 (defmethod ig/init-key :reitit/router
@@ -25,17 +19,8 @@
                            :jwt-secret jwt-secret
                            :mailer     mailer}
               :muuntaja   m/instance
-              :coercion   router.coercion/coercion
-              :middleware [parameters/parameters-middleware
-                           muuntaja/format-middleware
-                           [wrap-cors
-                            :access-control-allow-origin [#"http://localhost:3000"]
-                            :access-control-allow-methods [:get :post :put :delete :options]
-                            :access-control-allow-headers [:content-type :authorization]]
-                           exception/exception-middleware
-                           [wrap-authentication (backends/jws {:secret     jwt-secret
-                                                               :token-name "Bearer"})]
-                           coercion/coerce-response-middleware
-                           coercion/coerce-request-middleware
-                           middlewares/wrap-env]}})
-     (ring/redirect-trailing-slash-handler))))
+              :coercion   coercion
+              :middleware (create-global-middleware {:jwt-secret jwt-secret})}})
+     (ring/routes
+      (ring/redirect-trailing-slash-handler)
+      (ring/create-default-handler default-handlers)))))

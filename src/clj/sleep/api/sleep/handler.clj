@@ -6,18 +6,18 @@
             [sleep.router.exception :as exception]))
 
 (defn get-sleeps
-  [{:keys [env identity]}]
+  [{:keys [parameters env identity]}]
   (let [db         (:db env)
         account-id (:sub identity)
-        sleeps     (sleep.db/get-sleeps db account-id)]
+        sleeps     (sleep.db/get-sleeps db account-id (:query parameters))]
     (response/ok sleeps)))
 
 (defn create-sleep
   [{:keys [parameters env identity]}]
-  (let [{:keys [db]} env
-        data         (assoc (:body parameters)
-                            :account-id (:sub identity))
-        sleep        (sleep.db/create-sleep! db data)]
+  (let [db    (:db env)
+        data  (assoc (:body parameters)
+                     :account-id (:sub identity))
+        sleep (sleep.db/create-sleep! db data)]
     (if sleep
       (response/created sleep)
       (exception/throw-exception "Resource not found" 404 :not-found))))
@@ -46,17 +46,18 @@
 
 (defn delete-sleep
   [{:keys [parameters env identity]}]
-  (let [{:keys [db]} env
-        ident        {:account-id (:sub identity)
-                      :date       (get-in parameters [:path :date])}
-        sleep        (sleep.db/delete-sleep! db ident)]
+  (let [db    (:db env)
+        ident {:account-id (:sub identity)
+               :date       (get-in parameters [:path :date])}
+        sleep (sleep.db/delete-sleep! db ident)]
     (if sleep
       (response/ok sleep)
       (exception/throw-exception "Resource not found" 404 :not-found))))
 
 (def routes
   ["/sleep" {:middleware [wrap-authorization]}
-   ["" {:get  get-sleeps
+   ["" {:get  {:parameters {:query sleep.schema/get-all-query}
+               :handler    get-sleeps}
         :post {:parameters {:body sleep.schema/create-body}
                :handler    create-sleep}}]
    ["/:date" {:parameters {:path sleep.schema/date-path-param}

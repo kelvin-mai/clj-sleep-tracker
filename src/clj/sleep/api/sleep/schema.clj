@@ -3,6 +3,12 @@
             [sleep.utils.schema :refer [date?
                                         time?]]))
 
+(def get-all-query
+  (mu/optional-keys
+   [:map
+    [:start-date date?]
+    [:end-date date?]]))
+
 (def date-path-param
   [:map
    [:date date?]])

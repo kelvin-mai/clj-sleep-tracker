@@ -1,10 +1,11 @@
 (ns sleep.api.account.schema
-  (:require [sleep.utils.schema :refer [non-blank-string?]]))
+  (:require [sleep.utils.schema :refer [non-blank-string?
+                                        email?]]))
 
 (def register-body
   [:and
    [:map
-    [:email non-blank-string?]
+    [:email email?]
     [:password non-blank-string?]
     [:confirm-password non-blank-string?]]
    [:fn {:error/message "passwords must match"
@@ -14,7 +15,7 @@
 
 (def login-body
   [:map
-   [:email non-blank-string?]
+   [:email email?]
    [:password non-blank-string?]])
 
 (def refresh-access-token-body

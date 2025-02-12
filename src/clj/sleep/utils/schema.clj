@@ -21,3 +21,9 @@
    {:type            :time
     :pred            t/time?
     :type-properties {:error/message "must be a valid time"}}))
+
+(def email?
+  (m/-simple-schema
+   {:type :email
+    :pred #(re-matches #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" %)
+    :type-properties {:error/message "must be a valid email address"}}))
