@@ -1,5 +1,5 @@
 (ns sleep.api.account.utils
-  (:require [buddy.hashers :refer [check]]
+  (:require [buddy.hashers :as hashers]
             [buddy.sign.jwt :as jwt]
             [tick.core :as t]
             [sleep.api.account.db :as account.db]
@@ -19,7 +19,7 @@
 (defn password-match?
   [user password]
   (when (and user
-             (check password (:account/password user)))
+             (:valid (hashers/verify password (:account/password user))))
     user))
 
 (defn generate-access-token [jti sub secret]
@@ -38,6 +38,6 @@
                                                               {:token      refresh-token
                                                                :expiration (t/date-time refresh-expiration)})]
     (when stored-refresh-token
-      (map->ns-map "tokens"
+      (map->ns-map "token"
                    {:refresh-token refresh-token
                     :access-token  (generate-access-token (:refresh-token/id stored-refresh-token) sub secret)}))))

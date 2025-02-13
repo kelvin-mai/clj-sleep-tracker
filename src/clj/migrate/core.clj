@@ -1,5 +1,6 @@
 (ns migrate.core
-  (:require [migratus.core :as migratus]
+  (:require [taoensso.telemere :as t]
+            [migratus.core :as migratus]
             [integrant.core :as ig]
             [integrant.repl.state :as state]
             [sleep.system.core :refer [read-config]]))
@@ -15,20 +16,28 @@
    :store         :database
    :db            {:datasource ds}})
 
-(defn create-migration [{:keys [name]}]
-  (if (nil? name)
-    (println "please provide a name for the migration")
-    (let [config (create-config (get-datasource :dev))
-          files  (migratus/create config name)]
-      (println "created migration files" files))))
+(defn create-migration! [{:keys [name
+                                 profile]}]
+  (let [profile (or profile :dev)]
+    (if (nil? name)
+      (t/log! :error "please provide a name for the migration")
+      (let [config (create-config (get-datasource profile))
+            files  (migratus/create config name)]
+        (t/log! :info ["created migration files" files])))))
 
-(defn migrate [_]
-  (migratus/migrate (create-config (get-datasource :dev)))
-  (println "migrations complete"))
+(defn migrate! [{:keys [profile]}]
+  (let [profile (or profile :dev)]
+    (migratus/migrate (create-config (get-datasource profile)))
+    (t/log! :info "migrations complete")))
+
+(defn reset-db! [{:keys [profile]}]
+  (let [profile (or profile :dev)]
+    (migratus/reset (create-config (get-datasource profile)))
+    (t/log! :info "database reset complete")))
 
 (comment
   (create-config (get-datasource :dev))
-  (create-migration {:name "add-email-verification-columns"})
-  (migrate nil)
+  (create-migration! {:name "add-email-verification-columns"})
+  (migrate! nil)
   (migratus/down (create-config (get-datasource :dev))
                  20250210221333))

@@ -1,6 +1,8 @@
 (ns sleep.system.core
-  (:require [aero.core :as aero]
+  (:require [taoensso.telemere :as t]
+            [aero.core :as aero]
             [integrant.core :as ig]
+            sleep.system.mail
             sleep.system.db
             sleep.system.router
             sleep.system.server))
@@ -11,7 +13,7 @@
 
 (defmethod ig/init-key :system/config
   [_ config]
-  (println "Initializing system with config" config)
+  (t/log! :info ["Initializing system with config" config])
   config)
 
 (defn read-config

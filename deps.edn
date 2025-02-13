@@ -1,6 +1,7 @@
 {:paths   ["src/clj" "resources"]
  :deps    {org.clojure/clojure               {:mvn/version "1.12.0"}
            aero/aero                         {:mvn/version "1.1.6"}
+           com.taoensso/telemere             {:mvn/version "1.0.0-RC1"}
            integrant/integrant               {:mvn/version "0.13.1"}
            integrant/repl                    {:mvn/version "0.4.0"}
            org.postgresql/postgresql         {:mvn/version "42.7.5"}

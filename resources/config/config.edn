@@ -10,9 +10,9 @@
                               :user #env SMTP_USER
                               :pass #env SMTP_PASSWORD}}
  :postgres/db   {:config #ig/ref :system/config}
- :mail/sender   {:config #ig/ref :system/config}
+ :smtp/mailer   {:config #ig/ref :system/config}
  :reitit/router {:config #ig/ref :system/config
                  :db     #ig/ref :postgres/db
-                 :mailer #ig/ref :mail/sender}
+                 :mailer #ig/ref :smtp/mailer}
  :http/server   {:config #ig/ref :system/config
                  :router #ig/ref :reitit/router}}

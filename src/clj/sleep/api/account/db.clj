@@ -2,12 +2,12 @@
   (:require [sleep.utils.query :as q]
             [sleep.utils.time :refer [duration->instant]]
             [tick.core :as t]
-            [buddy.hashers :refer [encrypt]]))
+            [buddy.hashers :as  hashers]))
 
 (defn create-account!
   [db {:keys [email password]}]
   (let [data         {:email    email
-                      :password (encrypt password)}]
+                      :password (hashers/derive password)}]
     (q/query-one! db
                   {:insert-into :account
                    :values      [data]})))

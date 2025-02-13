@@ -53,15 +53,3 @@
     (if sleep
       (response/ok sleep)
       (exception/throw-exception "Resource not found" 404 :not-found))))
-
-(def routes
-  ["/sleep" {:middleware [wrap-authorization]}
-   ["" {:get  {:parameters {:query sleep.schema/get-all-query}
-               :handler    get-sleeps}
-        :post {:parameters {:body sleep.schema/create-body}
-               :handler    create-sleep}}]
-   ["/:date" {:parameters {:path sleep.schema/date-path-param}
-              :get        get-sleep
-              :put        {:parameters {:body sleep.schema/update-body}
-                           :handler    update-sleep}
-              :delete     delete-sleep}]])

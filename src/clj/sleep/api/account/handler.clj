@@ -1,12 +1,10 @@
 (ns sleep.api.account.handler
   (:require [next.jdbc :as jdbc]
             [sleep.api.account.db :as account.db]
-            [sleep.api.account.schema :as account.schema]
             [sleep.api.account.utils :refer [sanitize-account
                                              password-match?
                                              generate-tokens!
                                              generate-access-token]]
-            [sleep.router.middleware :refer [wrap-authorization]]
             [sleep.router.response :as response]
             [sleep.utils.maps :refer [map->ns-map]]
             [sleep.router.exception :as exception]))
@@ -39,8 +37,8 @@
         {:keys [email
                 password]} (:body parameters)]
     (jdbc/with-transaction [tx db]
-      (let [account                  (account.db/get-account-by-email tx email)
-            account                  (password-match? account password)]
+      (let [account (account.db/get-account-by-email tx email)
+            account (password-match? account password)]
         (if account
           (response/ok (merge (sanitize-account account)
                               (generate-tokens! tx
@@ -63,16 +61,16 @@
   (let [{:keys [db]} env
         jti          (:jti identity)
         _            (account.db/delete-refresh-token! db jti)]
-    (response/ok {})))
+    (response/ok)))
 
 (defn refresh-access-token
   [{:keys [identity parameters env]}]
   (let [{:keys [db
-                jwt-secret]}    env
+                jwt-secret]} env
         {:keys [jti
-                sub]}           identity
-        token                   (get-in parameters [:body :refresh-token])
-        refresh-token           (account.db/get-refresh-token-by-token-and-jti db jti token)]
+                sub]}       identity
+        token               (get-in parameters [:body :refresh-token])
+        refresh-token       (account.db/get-refresh-token-by-token-and-jti db jti token)]
     (if refresh-token
       (response/ok (assoc refresh-token
                           :refresh-token/access-token (generate-access-token jti sub jwt-secret)))
@@ -88,7 +86,7 @@
       (let [account              (account.db/verify-account! tx id code)]
         (if account
           (response/ok (merge (sanitize-account account)
-                              (generate-tokens! db
+                              (generate-tokens! tx
                                                 (:account/id account)
                                                 jwt-secret)))
           (exception/throw-exception "Invalid verification code" 403 :invalid-verification-code))))))
@@ -97,34 +95,16 @@
   [{:keys [parameters env]}]
   (let [{:keys [db
                 mailer]} env
-        {:keys [email]}       (:path parameters)
-        account               (account.db/regenerate-verification-code! db email)
-        _                     (when account
-                                (.send! mailer
-                                        {:from    "noreply@sleep.com"
-                                         :to      (:account/email account)
-                                         :subject "We sent you a new verification code"
-                                         :body    (str "We sent you a new verification code. Please verify your email. Please click on the link to verify your email."
-                                                       "link: http://localhost:8080/api/account/verify/"
-                                                       (:account/id account) "/" (:account/verification-code account))}))]
+        {:keys [email]}  (:path parameters)
+        account          (account.db/regenerate-verification-code! db email)
+        _                (when account
+                           (.send! mailer
+                                   {:from    "noreply@sleep.com"
+                                    :to      (:account/email account)
+                                    :subject "We sent you a new verification code"
+                                    :body    (str "We sent you a new verification code. Please verify your email. Please click on the link to verify your email."
+                                                  "link: http://localhost:8080/api/account/verify/"
+                                                  (:account/id account) "/" (:account/verification-code account))}))]
     (if account
-      (response/ok (-> account
-                       (dissoc :account/password)))
+      (response/ok)
       (exception/throw-exception "Invalid credentials" 403 :invalid-credentials))))
-
-(def routes
-  ["/account"
-   ["/" {:middleware [wrap-authorization]
-         :get        check-identity
-         :delete     logout}]
-   ["/register" {:post {:parameters {:body account.schema/register-body}
-                        :handler    register}}]
-   ["/login" {:post {:parameters {:body account.schema/login-body}
-                     :handler    login}}]
-   ["/refresh" {:middleware [wrap-authorization]
-                :post       {:parameters {:body account.schema/refresh-access-token-body}
-                             :handler    refresh-access-token}}]
-   ["/reverify/:email" {:parameters {:path account.schema/reverify-path-params}
-                        :get        new-verify-code}]
-   ["/verify/:id/:code" {:parameters {:path account.schema/verify-path-params}
-                         :get        verify-account}]])
