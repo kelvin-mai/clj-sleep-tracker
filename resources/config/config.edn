@@ -1,8 +1,10 @@
-{:system/config {:http-port  #or [#env HTTP_PORT 8080]
+{:system/config {:http-port  #profile {:default #or [#env HTTP_PORT 8080]
+                                       :test 8081}
                  :jwt-secret #or [#env JWT_SECRET "super-secret-key"]
                  :db         {:adapter       "postgresql"
                               :server-name   #or [#env POSTGRES_HOST "localhost"]
-                              :database-name #or [#env POSTGRES_DB "sleep_db"]
+                              :database-name #profile {:default #or [#env POSTGRES_DB "sleep_db"]
+                                                       :test "test_db"}
                               :username      #or [#env POSTGRES_USER "postgres"]
                               :password      #or [#env POSTGRES_PASSWORD "postgres"]}
                  :smtp       {:host #or [#env SMTP_HOST "localhost"]

@@ -26,9 +26,9 @@
 (def sleep-response
   [:map
    [:sleep/account-id :string]
-   [:sleep/sleep-date timestamp?]
-   [:sleep/start-time timestamp?]
-   [:sleep/end-time timestamp?]
+   [:sleep/sleep-date date?]
+   [:sleep/start-time time?]
+   [:sleep/end-time time?]
    [:sleep/duration number?]
    [:sleep/created-at timestamp?]
    [:sleep/updated-at [:or timestamp? :nil]]])

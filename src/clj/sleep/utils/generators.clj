@@ -3,11 +3,11 @@
             [tick.core :as t]))
 
 (defn format-time-number [n]
-  (str (if (< n 0) 0 nil)
+  (str (if (< n 10) 0 nil)
        n))
 
 (def gen-date
-  (gen/fmap #(t/date (-> (t/date "1900-01-01")
+  (gen/fmap #(t/date (-> (t/date "2000-01-01")
                          (t/>> (t/new-period % :days))))
             (gen/large-integer* {:min 0
                                  :max (* 120 365)})))

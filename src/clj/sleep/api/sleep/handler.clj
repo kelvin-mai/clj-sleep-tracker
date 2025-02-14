@@ -1,8 +1,6 @@
 (ns sleep.api.sleep.handler
   (:require [sleep.api.sleep.db :as sleep.db]
-            [sleep.api.sleep.schema :as sleep.schema]
             [sleep.router.response :as response]
-            [sleep.router.middleware :refer [wrap-authorization]]
             [sleep.router.exception :as exception]))
 
 (defn get-sleeps
