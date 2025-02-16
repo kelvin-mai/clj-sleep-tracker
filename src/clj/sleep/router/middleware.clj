@@ -2,6 +2,7 @@
   (:require [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends :as backends]
             [buddy.auth.middleware :refer [wrap-authentication]]
+            [taoensso.telemere :as t]
             [reitit.ring.coercion :as coercion]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
@@ -16,6 +17,21 @@
        (fn [request]
          (handler (assoc request :env env)))))})
 
+(def wrap-logging
+  {:name ::logging
+   :wrap
+   (fn [handler]
+     (fn [request]
+       (t/log! {:level :info
+                :data (select-keys request [:request-method
+                                            :headers
+                                            :uri
+                                            :parameters
+                                            :identity
+                                            :remote-addr])}
+               [(:request-method request) (:uri request)])
+       (handler request)))})
+
 (def wrap-metadata
   {:name ::metadata
    :wrap
@@ -29,8 +45,7 @@
                                 :parameters
                                 :identity
                                 :remote-addr])]
-         (if (or (<= 200 (:status response) 299)
-                 (<= 400 (:status response) 599))
+         (if (<= 200 (:status response) 299)
            (update response :body #(assoc % :meta meta))
            response))))})
 
@@ -56,4 +71,5 @@
    coercion/coerce-response-middleware
    coercion/coerce-request-middleware
    wrap-metadata
+   wrap-logging
    wrap-env])

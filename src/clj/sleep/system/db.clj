@@ -6,7 +6,9 @@
 (defmethod ig/init-key :postgres/db
   [_ {:keys [config]}]
   (let [options (:db config)]
-    (t/log! :info ["initializing database connection pool with options" options])
+    (t/log! {:level :info
+             :data options}
+            "initializing database connection pool")
     (hikari/make-datasource options)))
 
 (defmethod ig/halt-key! :postgres/db

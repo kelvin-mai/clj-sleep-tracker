@@ -6,7 +6,9 @@
 (defmethod ig/init-key :http/server
   [_ {:keys [router config]}]
   (let [port (:http-port config)]
-    (t/log! :info ["initializing http server on port" port])
+    (t/log! {:level :info
+             :data port}
+            "initializing http server on port")
     (http/run-server router {:port port})))
 
 (defmethod ig/halt-key! :http/server

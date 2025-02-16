@@ -13,7 +13,9 @@
 
 (defmethod ig/init-key :system/config
   [_ config]
-  (t/log! :info ["Initializing system with config" config])
+  (t/log! {:level :info
+           :data config}
+          "initializing system")
   config)
 
 (defn read-config

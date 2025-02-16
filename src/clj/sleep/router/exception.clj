@@ -1,5 +1,6 @@
 (ns sleep.router.exception
-  (:require [reitit.coercion :as coercion]
+  (:require [taoensso.telemere :as t]
+            [reitit.coercion :as coercion]
             [reitit.ring.middleware.exception :as exception]))
 
 (defn response
@@ -10,7 +11,12 @@
     :body   (merge
              {:success false
               :message message
-              :uri     (:uri request)}
+              :meta    (select-keys request [:request-method
+                                             :headers
+                                             :uri
+                                             :parameters
+                                             :identity
+                                             :remote-addr])}
              (when exception
                exception))}))
 
@@ -48,7 +54,7 @@
     ::coercion/response-coercion (handle-coercion-exception 500 "Malformed response")
     java.sql.SQLException        (handle-exception 500 "Database error")
     ::exception/wrap             (fn [handler e request]
-                                   (println e (:uri request))
+                                   (t/error! e)
                                    (handler e request))}))
 
 (def default-handlers
