@@ -12,12 +12,6 @@
         :responses {200 {:body response/no-content-response}}
         :get       (fn [_] (response/ok))}])
 
-(def api-routes
-  ["/api"
-   health-route
-   account/routes
-   sleep/routes])
-
 (def swagger-route
   ["/swagger.json"
    {:get {:no-doc  true
@@ -38,3 +32,9 @@
                     :components {:securitySchemes {"JWT" {:type   :http
                                                           :scheme :bearer}}}}
           :handler (openapi/create-openapi-handler)}}])
+
+(def api-routes
+  ["/api"
+   health-route
+   account/routes
+   sleep/routes])

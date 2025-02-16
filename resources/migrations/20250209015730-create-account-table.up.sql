@@ -1,6 +1,6 @@
 create table if not exists account (
   id text not null primary key default nanoid(),
-  email text not null unique,
+  email citext not null unique,
   password text not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz

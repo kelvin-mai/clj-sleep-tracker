@@ -11,6 +11,10 @@
 
 (use-fixtures :once with-system with-db)
 
+(defn- equivalent-time? [from-params from-req]
+  (= (str from-params)
+     (subs from-req 0 5)))
+
 (deftest sleep-crud-routes-test
   (let [{db     :postgres/db
          router :reitit/router}     @test-system
@@ -32,10 +36,10 @@
                                      :body-params    params})]
         (is (= (str (:sleep-date params))
                (get-in created [:data :sleep/sleep-date])))
-        (is (= (str (:start-time params))
-               (subs (get-in created [:data :sleep/start-time]) 0 5)))
-        (is (= (str (:end-time params))
-               (subs (get-in created [:data :sleep/end-time]) 0 5)))
+        (is (equivalent-time? (:start-time params)
+                              (get-in created [:data :sleep/start-time])))
+        (is (equivalent-time? (:end-time params)
+                              (get-in created [:data :sleep/end-time])))
 
         (testing "get-sleep"
           (let [sleep (request router {:request-method :get
@@ -53,11 +57,11 @@
             (is (= (get-in updated [:data :sleep/sleep-date])
                    (get-in created [:data :sleep/sleep-date])))
             (when (:sleep-date params)
-              (is (= (str (:start-time params))
-                     (subs (get-in updated [:data :sleep/start-time]) 0 5))))
+              (is (equivalent-time? (:start-time params)
+                                    (get-in updated [:data :sleep/start-time]))))
             (when (:sleep-date params)
-              (is (= (str (:end-time params))
-                     (subs (get-in updated [:data :sleep/end-time]) 0 5))))))
+              (is (equivalent-time? (:end-time params)
+                                    (get-in updated [:data :sleep/end-time]))))))
 
         (testing "delete-sleep"
           (let [deleted (request router {:request-method :delete

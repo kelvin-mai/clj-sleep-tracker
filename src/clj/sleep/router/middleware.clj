@@ -16,6 +16,24 @@
        (fn [request]
          (handler (assoc request :env env)))))})
 
+(def wrap-metadata
+  {:name ::metadata
+   :wrap
+   (fn [handler]
+     (fn [request]
+       (let [response (handler request)
+             meta (select-keys request
+                               [:request-method
+                                :headers
+                                :uri
+                                :parameters
+                                :identity
+                                :remote-addr])]
+         (if (or (<= 200 (:status response) 299)
+                 (<= 400 (:status response) 599))
+           (update response :body #(assoc % :meta meta))
+           response))))})
+
 (def wrap-authorization
   {:name ::authorization
    :wrap
@@ -37,4 +55,5 @@
                                        :token-name "Bearer"})]
    coercion/coerce-response-middleware
    coercion/coerce-request-middleware
+   wrap-metadata
    wrap-env])

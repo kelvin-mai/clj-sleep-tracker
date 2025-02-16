@@ -19,27 +19,9 @@
   (tools-ns/refresh :after 'user/start-interactive))
 
 (comment
-  (-> (read-config :dev) keys set)
   (halt)
   (restart)
   state/system
-  (->> (router {:request-method :post
-                :body-params    {:email    "me@kelvinmai.io"
-                                 :password "password"}
-                :uri            "/api/"})
-       :body
-       (muuntaja.core/decode "application/json"))
-  (->> (router {:request-method :get
-                :headers        {:authorization "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZUBrZWx2aW5tYWkuaW8iLCJpYXQiOiIyMDI1LTAyLTA5VDA3OjM5OjQyLjIzNDM2ODY4N1oiLCJleHAiOiIyMDI1LTAyLTA5VDA3OjU0OjQyLjIzNDQwNTIyOVoifQ.UvBcnxPViyVgf27az8ZtgCSaTo2I9311zZgerGRmkXk"}
-                :uri            "/api/accounts/"})
-       :body
-       (muuntaja.core/decode "application/json"))
 
-  (->> (router {:request-method :post
-                :body-params    {:email    "me@kelvinmai.io"
-                                 :password "password"}
-                :uri            "/api/account/login"})
-       :body
-       (muuntaja.core/decode "application/json"))
   ;
   )

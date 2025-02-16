@@ -27,7 +27,7 @@
                (catch Exception e
                  (str "Not a valid date: " e))))})
 
-(defn time-transformer []
+(defn custom-transformer []
   (mt/transformer
    {:encoders {:time {:compile encode-time}
                :date {:compile encode-date}}}
@@ -37,13 +37,13 @@
 (def json-transformer
   (mt/transformer
    mt/json-transformer
-   time-transformer
+   custom-transformer
    mt/default-value-transformer))
 
 (def string-transformer
   (mt/transformer
    mt/string-transformer
-   time-transformer
+   custom-transformer
    mt/default-value-transformer))
 
 (def coercion
