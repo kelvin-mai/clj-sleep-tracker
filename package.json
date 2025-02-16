@@ -1,0 +1,25 @@
+{
+  "name": "sleep-tracker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "watch:cljs": "shadow-cljs watch app",
+    "watch:css": "tailwindcss -i ./resources/config/index.css -o ./resources/public/css/index.css --watch",
+    "build": "shadow-cljs release app",
+    "dev": "npm-run-all -p watch:cljs watch:css",
+    "start": "npm run dev"
+  },
+  "dependencies": {
+    "@js-joda/core": "3.2.0",
+    "@js-joda/locale_en-us": "3.1.1",
+    "@js-joda/timezone": "2.5.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "shadow-cljs": "^2.28.20"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.6",
+    "npm-run-all": "^4.1.5",
+    "tailwindcss": "^4.0.6"
+  }
+}

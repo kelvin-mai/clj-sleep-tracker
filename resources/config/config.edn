@@ -10,7 +10,9 @@
                  :smtp       {:host #or [#env SMTP_HOST "localhost"]
                               :port #or [#env SMTP_PORT 1025]
                               :user #env SMTP_USER
-                              :pass #env SMTP_PASSWORD}}
+                              :pass #env SMTP_PASSWORD
+                              :enabled #profile {:default true
+                                                 :test false}}}
  :postgres/db   {:config #ig/ref :system/config}
  :smtp/mailer   {:config #ig/ref :system/config}
  :reitit/router {:config #ig/ref :system/config
