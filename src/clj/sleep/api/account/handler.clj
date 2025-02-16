@@ -83,7 +83,7 @@
         {:keys [id
                 code]}       (:path parameters)]
     (jdbc/with-transaction [tx db]
-      (let [account              (account.db/verify-account! tx id code)]
+      (let [account (account.db/verify-account! tx id code)]
         (if account
           (response/ok (merge (sanitize-account account)
                               (generate-tokens! tx

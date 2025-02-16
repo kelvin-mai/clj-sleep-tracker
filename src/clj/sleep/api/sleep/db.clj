@@ -9,9 +9,9 @@
                        where-clause)
         where-clause (cond-> where-clause
                        (:start-date query)
-                       (conj [>= :sleep-date (:start-date query)])
+                       (conj [:<= :sleep-date (:start-date query)])
                        (:end-date query)
-                       (conj [<= :sleep-date (:end-date query)]))]
+                       (conj [:>= :sleep-date (:end-date query)]))]
     (q/query! db
               {:select [:*]
                :from   [:sleep]

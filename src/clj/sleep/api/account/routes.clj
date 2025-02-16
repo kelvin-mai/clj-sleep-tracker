@@ -6,19 +6,19 @@
             [sleep.router.middleware :refer [wrap-authorization]]))
 
 (def routes
-  ["/account" {:tags #{"account"}
+  ["/account" {:tags    #{"account"}
                :openapi {:security [{"JWT" []}]}
                :swagger {:security [{"JWT" []}]}}
    ["/" {:middleware [wrap-authorization]
          :get        {:responses {200 {:body (wrap-response-schema account.schema/check-identity-response)}}
-                      :handler account.handler/check-identity}
+                      :handler   account.handler/check-identity}
          :delete     {:responses {200 {:body no-content-response}}
-                      :handler account.handler/logout}}]
+                      :handler   account.handler/logout}}]
    ["/register" {:post {:parameters {:body account.schema/register-body}
-                        :responses {201 {:body (wrap-response-schema account.schema/account-response)}}
+                        :responses  {201 {:body (wrap-response-schema account.schema/account-response)}}
                         :handler    account.handler/register}}]
    ["/login" {:post {:parameters {:body account.schema/login-body}
-                     :responses {200 {:body (wrap-response-schema account.schema/account-response)}}
+                     :responses  {200 {:body (wrap-response-schema account.schema/account-response)}}
                      :handler    account.handler/login}}]
    ["/refresh" {:middleware [wrap-authorization]
                 :post       {:parameters {:body account.schema/refresh-access-token-body}

@@ -2,7 +2,9 @@
   (:require [honey.sql :as sql]
             [next.jdbc :as jdbc]
             [next.jdbc.date-time]
-            [next.jdbc.result-set :as rs]))
+            [next.jdbc.prepare :as p]
+            [next.jdbc.result-set :as rs])
+  (:import (java.sql PreparedStatement)))
 
 (extend-protocol rs/ReadableColumn
   java.sql.Date
@@ -16,6 +18,17 @@
   java.sql.Time
   (read-column-by-label [^java.sql.Time v _]     (.toLocalTime v))
   (read-column-by-index [^java.sql.Time v _ _] (.toLocalTime v)))
+
+(extend-protocol p/SettableParameter
+  java.time.LocalDate
+  (set-parameter [^java.time.LocalDate v ^PreparedStatement ps idx]
+    (.setObject ps idx v))
+  java.time.Instant
+  (set-parameter [^java.time.Instant v ^PreparedStatement ps idx]
+    (.setObject ps idx v))
+  java.time.LocalTime
+  (set-parameter [^java.time.LocalTime v ^PreparedStatement ps idx]
+    (.setObject ps idx v)))
 
 (def jdbc-opts
   {:return-keys true
