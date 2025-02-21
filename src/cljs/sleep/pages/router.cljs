@@ -4,24 +4,22 @@
             [reitit.frontend :as r]
             [reitit.frontend.easy :as rfe]
             [reitit.coercion.malli :as rcm]
-            [sleep.pages.auth.view :as auth]
-            [sleep.pages.dashboard.view :as dashboard]))
+            [sleep.utils :refer [href]]
+            [sleep.pages.auth.views :as auth]
+            [sleep.pages.dashboard.views :as dashboard]))
 
-(def home-page
+(defn home-page []
   [:div
    [:h1 "Welcome to Sleep"]
-   [:p "This is a simple sleep tracking app."]])
+   [:p "This is a simple sleep tracking app."]
+   [:a {:href "/auth"} "Sign Up"]
+   [:a {:href "/dashboard"} "Dashboard"]])
 
 (defn on-navigate [new-match]
   (rf/dispatch [:navigated new-match]))
 
-(defn href
-  ([k] (href k nil nil))
-  ([k params] (href k params nil))
-  ([k params query] (rfe/href k params query)))
-
 (defn nav [{:keys [router current-route]}]
-  [:ul
+  [:ul {:class "flex justify-around"}
    (for [route-name (r-core/route-names router)
          :let [route (r-core/match-by-name router route-name)
                text (-> route :data :link-text)]]
@@ -37,7 +35,7 @@
          :view home-page
          :link-text "Home"
          :controllers []}]
-    auth/route
+    auth/routes
     dashboard/route]
    {:data {:coercion rcm/coercion}}))
 
@@ -48,9 +46,9 @@
    on-navigate
    {:use-fragment false}))
 
-(defn router-component [{:keys [router]}]
+(defn router-component []
   (let [current-route @(rf/subscribe [:current-route])]
     [:div
      [:nav (nav {:router router :current-route current-route})]
-     (when current-route
-       (get-in current-route [:data :view]))]))
+     (when-let [view (get-in current-route [:data :view])]
+       [view])]))

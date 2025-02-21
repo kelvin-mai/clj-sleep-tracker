@@ -5,3 +5,8 @@
  :current-route
  (fn [db]
    (:current-route db)))
+
+(rf/reg-sub
+ :router
+ (fn [db]
+   (:router db)))
