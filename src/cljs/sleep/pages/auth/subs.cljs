@@ -4,4 +4,9 @@
 (rf/reg-sub
  ::account
  (fn [db]
-   (get-in db [::auth :account])))
+   (get-in db [:auth :account])))
+
+(rf/reg-sub
+ ::validation-errors
+ (fn [db [_ type]]
+   (get-in db [:auth :validation-errors type])))

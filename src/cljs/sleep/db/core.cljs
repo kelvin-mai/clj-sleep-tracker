@@ -4,14 +4,17 @@
             [ajax.core :as ajax]
             [day8.re-frame.http-fx]
             [sleep.db.fx]
-            [sleep.db.subs]))
+            [sleep.db.subs]
+            [sleep.pages.auth.events :as auth.db]))
 
 (def base-url "http://localhost:8080")
 
 (rf/reg-event-db
  :initialize-db
  (fn [_ [_]]
-   {}))
+   (merge
+    {:current-route nil}
+    auth.db/initial-state)))
 
 (rf/reg-event-fx
  :http

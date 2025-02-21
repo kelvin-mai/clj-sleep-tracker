@@ -17,18 +17,22 @@
    [:div {:class "flex items-center justify-center"}
     children]])
 
-(defn form-input [{:keys [id label type placeholder value on-change required? disabled?]}]
+(defn form-input [{:keys [id label type placeholder value on-change required? disabled? error]}]
   [:div {:class "grid gap-2"}
    [:label {:class "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             :for   id}
     label]
-   [input {:id          id
-           :placeholder placeholder
-           :type        type
-           :value       value
-           :on-change   on-change
-           :required    required?
-           :disabled    disabled?}]])
+   [:div
+    [input {:id          id
+            :placeholder placeholder
+            :type        type
+            :value       value
+            :on-change   on-change
+            :required    required?
+            :disabled    disabled?}]
+    (when error
+      [:div {:class "capitalize text-red-500 text-sm text-center"}
+       (first error)])]])
 
 (defn auth-form-container [{:keys [type on-submit]}
                            children]
@@ -68,25 +72,29 @@
                             :password ""})
         on-change  (fn [k] #(swap! form-state assoc k (-> % .-target .-value)))]
     (fn []
-      [auth-form-container {:type      :login
-                            :on-submit (fn [e]
-                                         (.preventDefault e)
-                                         (rf/dispatch [::auth.events/login @form-state]))}
-       [:<>
-        [form-input {:id          :email
-                     :type        "email"
-                     :label       "Email Address"
-                     :placeholder "your-name@email.com"
-                     :value       (:email @form-state)
-                     :on-change   (on-change :email)
-                     :required?   true}]
-        [form-input {:id          :password
-                     :type        "password"
-                     :label       "Password"
-                     :placeholder "password"
-                     :value       (:password @form-state)
-                     :on-change   (on-change :password)
-                     :required?   true}]]])))
+      (let [login-errors @(rf/subscribe [::auth.subs/validation-errors :login])]
+        (js/console.log {:login-errors login-errors})
+        [auth-form-container {:type      :login
+                              :on-submit (fn [e]
+                                           (.preventDefault e)
+                                           (rf/dispatch [::auth.events/login @form-state]))}
+         [:<>
+          [form-input {:id          :email
+                       :type        "email"
+                       :label       "Email Address"
+                       :placeholder "your-name@email.com"
+                       :value       (:email @form-state)
+                       :on-change   (on-change :email)
+                       :required?   true
+                       :error       (:email login-errors)}]
+          [form-input {:id          :password
+                       :type        "password"
+                       :label       "Password"
+                       :placeholder "password"
+                       :value       (:password @form-state)
+                       :on-change   (on-change :password)
+                       :required?   true
+                       :error       (:password login-errors)}]]]))))
 
 (defn register-form []
   (let [form-state (r/atom {:email            ""
@@ -94,32 +102,37 @@
                             :confirm-password ""})
         on-change  (fn [k] #(swap! form-state assoc k (-> % .-target .-value)))]
     (fn []
-      [auth-form-container {:type      :register
-                            :on-submit (fn [e]
-                                         (.preventDefault e)
-                                         (rf/dispatch [::auth.events/register @form-state]))}
-       [:<>
-        [form-input {:id          :email
-                     :type        "email"
-                     :label       "Email Address"
-                     :placeholder "your-name@email.com"
-                     :value       (:email @form-state)
-                     :on-change   (on-change :email)
-                     :required?   true}]
-        [form-input {:id          :password
-                     :type        "password"
-                     :label       "Password"
-                     :placeholder "password"
-                     :value       (:password @form-state)
-                     :on-change   (on-change :password)
-                     :required?   true}]
-        [form-input {:id          :confirm-password
-                     :type        "password"
-                     :label       "Confirm Password"
-                     :placeholder "confirm password"
-                     :value       (:confirm-password @form-state)
-                     :on-change   (on-change :confirm-password)
-                     :required?   true}]]])))
+      (let [validation-errors @(rf/subscribe [::auth.subs/validation-errors :register])]
+        (js/console.log validation-errors)
+        [auth-form-container {:type      :register
+                              :on-submit (fn [e]
+                                           (.preventDefault e)
+                                           (rf/dispatch [::auth.events/register @form-state]))}
+         [:<>
+          [form-input {:id          :email
+                       :type        "email"
+                       :label       "Email Address"
+                       :placeholder "your-name@email.com"
+                       :value       (:email @form-state)
+                       :on-change   (on-change :email)
+                       :required?   true
+                       :error       (:email validation-errors)}]
+          [form-input {:id          :password
+                       :type        "password"
+                       :label       "Password"
+                       :placeholder "password"
+                       :value       (:password @form-state)
+                       :on-change   (on-change :password)
+                       :required?   true
+                       :error       (:password validation-errors)}]
+          [form-input {:id          :confirm-password
+                       :type        "password"
+                       :label       "Confirm Password"
+                       :placeholder "confirm password"
+                       :value       (:confirm-password @form-state)
+                       :on-change   (on-change :confirm-password)
+                       :required?   true
+                       :error       (:confirm-password validation-errors)}]]]))))
 
 (defn forgot-password-form []
   (let [email (r/atom "")]

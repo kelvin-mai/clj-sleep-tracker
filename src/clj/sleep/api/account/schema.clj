@@ -11,7 +11,7 @@
     [:password non-blank-string?]
     [:confirm-password non-blank-string?]]
    [:fn {:error/message "passwords must match"
-         :error/path    [:confirm-pasword]}
+         :error/path    [:confirm-password]}
     (fn [{:keys [password confirm-password]}]
       (= password confirm-password))]])
 
