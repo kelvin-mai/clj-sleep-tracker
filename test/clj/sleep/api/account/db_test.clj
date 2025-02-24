@@ -1,5 +1,6 @@
 (ns sleep.api.account.db-test
   (:require [clojure.test :refer :all]
+            [clojure.string :as s]
             [malli.generator :as mg]
             [buddy.hashers :as hashers]
             [sleep.api.account.db :as account.db]
@@ -16,7 +17,7 @@
       (let [params (mg/generate account.schema/login-body)
             created-account (account.db/create-account! db params)]
         (is (= (:account/email created-account)
-               (:email params)))
+               (s/lower-case (:email params))))
         (is (:valid (hashers/verify (:password params)
                                     (:account/password created-account))))
 

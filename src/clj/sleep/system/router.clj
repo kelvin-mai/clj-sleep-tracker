@@ -6,7 +6,7 @@
             [reitit.swagger-ui :as swagger-ui]
             [reitit.coercion.malli]
             [sleep.router.coercion :refer [coercion]]
-            [sleep.router.middleware :refer [create-global-middleware]]
+            [sleep.router.middleware :refer [global-middlewares]]
             [sleep.router.exception :refer [default-handlers]]
             [sleep.api.routes :refer [swagger-route
                                       openapi-route
@@ -26,7 +26,7 @@
                            :mailer     mailer}
               :muuntaja   m/instance
               :coercion   coercion
-              :middleware (create-global-middleware {:jwt-secret jwt-secret})}})
+              :middleware global-middlewares}})
      (ring/routes
       (swagger-ui/create-swagger-ui-handler
        {:path "/"

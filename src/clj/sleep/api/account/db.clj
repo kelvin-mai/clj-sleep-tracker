@@ -1,13 +1,15 @@
 (ns sleep.api.account.db
-  (:require [sleep.utils.query :as q]
-            [sleep.utils.time :refer [duration->instant]]
-            [tick.core :as t]
-            [buddy.hashers :as  hashers]))
+  (:require [tick.core :as t]
+            [buddy.hashers :as  hashers]
+            [one-time.core :as ot]
+            [sleep.utils.query :as q]
+            [sleep.utils.time :refer [duration->instant]]))
 
 (defn create-account!
   [db {:keys [email password]}]
   (let [data         {:email    email
-                      :password (hashers/derive password)}]
+                      :password (hashers/derive password)
+                      :otp-secret (ot/generate-secret-key)}]
     (q/query-one! db
                   {:insert-into :account
                    :values      [data]})))
@@ -17,7 +19,7 @@
   (q/query-one! db
                 {:select [:*]
                  :from   [:account]
-                 :where  [:= :email email]}))
+                 :where  [:= :email [:cast email :citext]]}))
 
 (defn get-account-by-id
   [db id]
@@ -55,15 +57,13 @@
                           [:= :token token]]}))
 
 (defn verify-account!
-  [db id code]
+  [db email]
   (q/query-one! db
                 {:update :account
                  :set    {:verified true}
                  :where  [:and
-                          [:= :id id]
-                          [:= :verified false]
-                          [:= :verification-code code]
-                          [:> :verification-code-expiration (t/date-time)]]}))
+                          [:= :email email]
+                          [:= :verified false]]}))
 
 (defn regenerate-verification-code!
   [db email]

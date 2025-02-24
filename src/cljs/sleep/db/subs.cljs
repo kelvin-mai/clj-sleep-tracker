@@ -10,3 +10,8 @@
  :router
  (fn [db]
    (:router db)))
+
+(rf/reg-sub
+ :dark-mode
+ (fn [db]
+   (:dark-mode db)))

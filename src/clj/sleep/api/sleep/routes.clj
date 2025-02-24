@@ -2,11 +2,13 @@
   (:require [sleep.api.sleep.schema :as sleep.schema]
             [sleep.api.sleep.handler :as sleep.handler]
             [sleep.router.response :as response]
-            [sleep.router.middleware :refer [wrap-authorization]]))
+            [sleep.router.middleware :refer [wrap-authorization
+                                             wrap-authentication]]))
 
 (def routes
   ["/sleep" {:tags       #{"sleep"}
-             :middleware [wrap-authorization]
+             :middleware [wrap-authentication
+                          wrap-authorization]
              :openapi    {:security [{"JWT" []}]}
              :swagger    {:security [{"JWT" []}]}}
    ["" {:get  {:parameters {:query sleep.schema/get-all-query}

@@ -13,7 +13,8 @@
  :initialize-db
  (fn [_ [_]]
    (merge
-    {:current-route nil}
+    {:current-route nil
+     :dark-mode false}
     auth.db/initial-state)))
 
 (rf/reg-event-fx
@@ -42,3 +43,8 @@
  (fn [db [_ error]]
    (js/console.log error)
    db))
+
+(rf/reg-event-db
+ :toggle-dark-mode
+ (fn [db _]
+   {:db (update db :dark-mode not)}))

@@ -22,16 +22,16 @@
 
 (def refresh-access-token-body
   [:map
+   [:access-token non-blank-string?]
    [:refresh-token non-blank-string?]])
 
 (def verify-path-params
   [:map
-   [:id non-blank-string?]
-   [:code :uuid]])
+   [:email email?]])
 
-(def re-verify-path-params
+(def verify-body
   [:map
-   [:email non-blank-string?]])
+   [:code :int]])
 
 (def sanitized-account
   [:map

@@ -36,7 +36,7 @@
              :data {:profile profile
                     :pending (migratus/pending-list config)}}
             "starting migrations")
-    (migratus/migrate (create-config (get-datasource profile)))
+    (migratus/migrate config)
     (t/log! {:level :info
              :data {:profile profile
                     :completed (migratus/completed-list config)}}
@@ -52,7 +52,8 @@
 
 (comment
   (create-config (get-datasource :dev))
-  (create-migration! {:name "add-email-verification-columns"})
+  (create-migration! {:name "use-otp-verification"})
   (migrate! nil)
+  (reset-db! nil)
   (migratus/down (create-config (get-datasource :dev))
                  20250210221333))

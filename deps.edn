@@ -19,7 +19,10 @@
            ring-cors/ring-cors               {:mvn/version "0.1.13"}
            migratus/migratus                 {:mvn/version "1.6.3"}
            tick/tick                         {:mvn/version "1.0"}
-           com.draines/postal                {:mvn/version "2.0.5"}}
+           com.draines/postal                {:mvn/version "2.0.5"}
+           jarohen/chime                     {:mvn/version "0.3.3"}
+          ;;  one-time/one-time                 {:mvn/version "0.8.0"}
+           kanwei/one-time                   {:mvn/version "0.7.0"}}
  :aliases {:server           {:main-opts ["-m" "sleep.core"]}
            :client           {:extra-paths ["src/cljs"
                                             "src/cljc"]

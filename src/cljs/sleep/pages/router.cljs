@@ -9,7 +9,7 @@
             [sleep.pages.dashboard.views :as dashboard]))
 
 (defn home-page []
-  [:div
+  [:div {:class "bg-white text-black dark:bg-black dark:text-white"}
    [:h1 "Welcome to Sleep"]
    [:p "This is a simple sleep tracking app."]
    [:a {:href "/auth"} "Sign Up"]

@@ -8,7 +8,12 @@
 (defn with-system [f]
   (reset! test-system
           (ig/init (read-config :test)))
-  (f)
+  (try
+    (f)
+    (catch Exception e
+      (println (.getMessage e) (.getStackTrace e))
+      (throw e)
+      (ig/halt! @test-system)))
   (ig/halt! @test-system)
   (reset! test-system nil))
 

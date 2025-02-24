@@ -1,13 +1,15 @@
 (ns sleep.router.middleware
   (:require [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends :as backends]
-            [buddy.auth.middleware :refer [wrap-authentication]]
+            [buddy.auth.middleware :as auth.middleware]
             [taoensso.telemere :as t]
             [reitit.ring.coercion :as coercion]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
-            [ring.middleware.cors :refer [wrap-cors]]
+            [ring.middleware.cors :as ring.cors]
             [sleep.router.exception :as exception]))
+
+(comment ring.cors/wrap-cors)
 
 (def wrap-env
   {:name ::env
@@ -49,6 +51,17 @@
            (update response :body #(assoc % :meta meta))
            response))))})
 
+(def wrap-authentication
+  {:name ::authentication
+   :wrap
+   (fn [handler]
+     (fn [request]
+       (let [jwt-secret (get-in request [:env :jwt-secret])
+             token-backend (backends/jws {:secret jwt-secret
+                                          :token-name "Bearer"})
+             wrapped-handler (auth.middleware/wrap-authentication handler token-backend)]
+         (wrapped-handler request))))})
+
 (def wrap-authorization
   {:name ::authorization
    :wrap
@@ -58,16 +71,27 @@
          (handler request)
          (exception/throw-exception "Unauthorized" 401 :unauthorized))))})
 
-(defn create-global-middleware [{:keys [jwt-secret]}]
+(def wrap-cors
+  {:name ::cors
+   :wrap
+   (fn [handler]
+     (fn [request]
+       (let [allowed-origin  "http://localhost:4000"
+             allowed-methods "GET, PUT, PATCH, POST, DELETE, OPTIONS"
+             allowed-headers "Authorization, Content-Type"
+             max-age         600
+             response        (handler request)]
+         (-> response
+             (assoc-in [:headers "Access-Control-Allow-Origin"] allowed-origin)
+             (assoc-in [:headers "Access-Control-Allow-Methods"] allowed-methods)
+             (assoc-in [:headers "Access-Control-Allow-Headers"] allowed-headers)
+             (assoc-in [:headers "Access-Control-Max-Age"] max-age)))))})
+
+(def global-middlewares
   [parameters/parameters-middleware
    muuntaja/format-middleware
-   [wrap-cors
-    :access-control-allow-origin  [#"http://localhost:4000"]
-    :access-control-allow-methods [:get :post :put :delete :options]
-    :access-control-allow-headers [:content-type :authorization]]
+   wrap-cors
    exception/exception-middleware
-   [wrap-authentication (backends/jws {:secret     jwt-secret
-                                       :token-name "Bearer"})]
    coercion/coerce-response-middleware
    coercion/coerce-request-middleware
    wrap-metadata
