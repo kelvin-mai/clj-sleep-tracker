@@ -1,15 +1,13 @@
 (ns sleep.api.account.db
-  (:require [tick.core :as t]
-            [buddy.hashers :as  hashers]
+  (:require [buddy.hashers :as  hashers]
             [one-time.core :as ot]
-            [sleep.utils.query :as q]
-            [sleep.utils.time :refer [duration->instant]]))
+            [sleep.utils.query :as q]))
 
 (defn create-account!
   [db {:keys [email password]}]
-  (let [data         {:email    email
-                      :password (hashers/derive password)
-                      :otp-secret (ot/generate-secret-key)}]
+  (let [data {:email      email
+              :password   (hashers/derive password)
+              :otp-secret (ot/generate-secret-key)}]
     (q/query-one! db
                   {:insert-into :account
                    :values      [data]})))
@@ -32,7 +30,7 @@
   [db id password]
   (q/query-one! db
                 {:update :account
-                 :set    {:password password}
+                 :set    {:password (hashers/derive password)}
                  :where  [:= :id id]}))
 
 (defn store-refresh-token!
@@ -61,16 +59,6 @@
   (q/query-one! db
                 {:update :account
                  :set    {:verified true}
-                 :where  [:and
-                          [:= :email email]
-                          [:= :verified false]]}))
-
-(defn regenerate-verification-code!
-  [db email]
-  (q/query-one! db
-                {:update :account
-                 :set    {:verification-code            (random-uuid)
-                          :verification-code-expiration (t/date-time (duration->instant 24 :hours))}
                  :where  [:and
                           [:= :email email]
                           [:= :verified false]]}))

@@ -25,7 +25,13 @@
    ["/refresh" {:post {:parameters {:body account.schema/refresh-access-token-body}
                        :responses  {200 {:body (wrap-response-schema account.schema/refresh-access-token-response)}}
                        :handler    account.handler/refresh-access-token}}]
-   ["/verify/:email" {:parameters {:path account.schema/verify-path-params}
+   ["/reset-password/:email" {:parameters {:path account.schema/email-path-params}
+                              :get {:responses {200 {:body no-content-response}}
+                                    :handler account.handler/get-reset-password-code}
+                              :post {:parameters {:body account.schema/reset-password-body}
+                                     :responses {200 {:body no-content-response}}
+                                     :handler account.handler/reset-password}}]
+   ["/verify/:email" {:parameters {:path account.schema/email-path-params}
                       :get        {:responses  {200 {:body no-content-response}}
                                    :handler account.handler/new-verify-code}
                       :post {:parameters {:body account.schema/verify-body}

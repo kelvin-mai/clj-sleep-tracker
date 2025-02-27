@@ -25,13 +25,19 @@
    [:access-token non-blank-string?]
    [:refresh-token non-blank-string?]])
 
-(def verify-path-params
+(def email-path-params
   [:map
    [:email email?]])
 
 (def verify-body
   [:map
    [:code :int]])
+
+(def reset-password-body
+  [:map
+   [:code :int]
+   [:password non-blank-string?]
+   [:confirm-password non-blank-string?]])
 
 (def sanitized-account
   [:map

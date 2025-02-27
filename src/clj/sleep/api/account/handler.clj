@@ -119,3 +119,38 @@
                                                 (:account/id account)
                                                 jwt-secret)))))
       (exception/throw-exception "Invalid verification code" 403 :invalid-verification-code))))
+
+(defn get-reset-password-code
+  [{:keys [parameters env]}]
+  (let [{:keys [db
+                mailer]} env
+        email            (get-in parameters [:path :email])
+        account          (account.db/get-account-by-email db email)
+        code             (ot/get-totp-token (:account/otp-secret account) {:time-step (* 15 60)})
+        _                (when account
+                           (.send! mailer
+                                   {:from    "noreply@sleep.com"
+                                    :to      (:account/email account)
+                                    :subject "You requested to reset your password"
+                                    :body    (str "To reset your password your code is "
+                                                  code
+                                                  "Please click on the link to verify your email."
+                                                  "link: http://localhost:8080/api/account/verify/"
+                                                  (:account/id account) "/" (:account/verification-code account))}))]
+    (if account
+      (response/ok)
+      (exception/throw-exception "Invalid credentials" 403 :invalid-credentials))))
+
+(defn reset-password
+  [{:keys [parameters env]}]
+  (let [{:keys [db]}       env
+        email              (get-in parameters [:path :email])
+        {:keys [code
+                password]} (:body parameters)
+        account            (account.db/get-account-by-email db email)
+        valid?             (ot/is-valid-totp-token? code (:account/otp-secret account) {:time-step (* 15 60)})]
+    (if valid?
+      (do
+        (account.db/update-account-password! db email password)
+        (response/ok))
+      (exception/throw-exception "Invalid OTP code" 403 :invalid-otp-code))))

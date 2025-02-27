@@ -9,8 +9,7 @@
 (defn sanitize-account [account]
   (dissoc account
           :account/password
-          :account/verification-code
-          :account/verification-code-expiration))
+          :account/otp-secret))
 
 (defn generate-initial-claims [sub]
   {:sub sub
