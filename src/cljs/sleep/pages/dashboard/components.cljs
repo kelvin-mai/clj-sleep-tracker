@@ -1,7 +1,7 @@
 (ns sleep.pages.dashboard.components)
 
 (defn stat-card [{:keys [title amount description]}]
-  [:div {:class "rounded-xl border bg-card text-card-foreground shadow"}
+  [:div {:class "rounded-xl border text-card-foreground shadow border-slate-200"}
    [:div {:class "flex flex-col space-y-1.5 p-6"}
     [:h3 {:class "font-semibold leading-none tracking-tight"}
      title]]
@@ -10,7 +10,7 @@
     [:p {:class "text-xs text-muted-foreground"} description]]])
 
 (defn history-card []
-  [:div {:class "rounded-xl border bg-card text-card-foreground shadow"}
+  [:div {:class "rounded-xl border text-card-foreground shadow border-slate-200"}
    [:div {:class "flex flex-col space-y-1.5 p-6"}
     [:h2 {:class "font-semibold leading-none tracking-tight"}
      "History"]

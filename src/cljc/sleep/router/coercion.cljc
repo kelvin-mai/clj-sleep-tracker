@@ -1,7 +1,8 @@
 (ns sleep.router.coercion
   (:require [reitit.coercion.malli :as rm]
             [malli.transform :as mt]
-            [tick.core :as t]))
+            [tick.core :as t]
+            #?(:cljs [re-frame.core :as rf])))
 
 (defn encode-time [_ _]
   {:enter #(if (inst? %)
@@ -12,8 +13,10 @@
   {:enter #(when (string? %)
              (try
                (t/time %)
-               (catch Exception e
-                 (str "Not a valid time: " e))))})
+               #?(:clj (catch Exception e
+                         (str "Not a valid time: " e))
+                  :cljs (catch js/Error e
+                          (rf/dispatch [:coercion-error e])))))})
 
 (defn encode-date [_ _]
   {:enter #(if (inst? %)
@@ -24,8 +27,10 @@
   {:enter #(when (string? %)
              (try
                (t/date %)
-               (catch Exception e
-                 (str "Not a valid date: " e))))})
+               #?(:clj (catch Exception e
+                         (str "Not a valid date: " e))
+                  :cljs (catch js/Error e
+                          (rf/dispatch [:coercion-error e])))))})
 
 (defn custom-transformer []
   (mt/transformer
@@ -50,4 +55,5 @@
   (rm/create
    (-> rm/default-options
        (assoc-in [:transformers :body :formats "application/json"] json-transformer)
-       (assoc-in [:transformers :string :default] string-transformer))))
+       (assoc-in [:transformers :string :default] string-transformer)
+       #?(:cljs (assoc :validate false)))))

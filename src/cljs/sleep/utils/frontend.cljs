@@ -1,4 +1,4 @@
-(ns sleep.utils
+(ns sleep.utils.frontend
   (:require [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             ["tailwind-merge" :refer [twMerge]]))

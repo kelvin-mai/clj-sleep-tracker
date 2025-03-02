@@ -2,37 +2,17 @@
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
             [sleep.components.common :refer [button
-                                             input
+                                             form-input
                                              separator]]
-            [sleep.utils :refer [href]]
+            [sleep.utils.frontend :refer [href]]
             [sleep.pages.auth.events :as auth.events]
             [sleep.pages.auth.subs :as auth.subs]))
 
 (defn page-container [children]
   [:div {:class "grid min-h-svh lg:grid-cols-2"}
-   [:div {:class "relative hidden bg-slate-700 lg:block"}
-    [:img {:src   "/assets/gradient-bg.svg"
-           :alt   "Background image"
-           :class "absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"}]]
+   [:div {:class "relative hidden bg-linear-to-br from-indigo-900 to-slate-700 lg:block"}]
    [:div {:class "flex items-center justify-center"}
     children]])
-
-(defn form-input [{:keys [id label type placeholder value on-change required? disabled? error]}]
-  [:div {:class "grid gap-2"}
-   [:label {:class "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            :for   id}
-    label]
-   [:div
-    [input {:id          id
-            :placeholder placeholder
-            :type        type
-            :value       value
-            :on-change   on-change
-            :required    required?
-            :disabled    disabled?}]
-    (when error
-      [:div {:class "capitalize text-red-500 text-sm text-center"}
-       (first error)])]])
 
 (defn auth-form-container [{:keys [type on-submit]}
                            children]
@@ -48,22 +28,25 @@
                        :text "Register now!"}
                       {:link (href :sleep.pages.auth.views/login-route)
                        :text "Log in."})
-        submit-text (if (= type :login) "Login" "Register")]
+        submit-text (if (= type :login) "Login" "Register")
+        loading     @(rf/subscribe [::auth.subs/loading])]
     [:form {:class     "flex flex-col gap-6"
             :on-submit on-submit}
      [:div {:class "flex flex-col items-center gap-2 text-center"}
       [:h1 {:class "text-2xl font-bold"} title]
-      [:p {:class "text-balance text-sm text-muted-foreground"} description]]
+      [:p {:class "text-balance text-sm text-slate-500"} description]]
      children
-     [button {:type "submit"} submit-text]
+     [button {:type      "submit"
+              :disabled loading}
+      submit-text]
      [separator {:orientation "horizontal"}]
      [:div {:class "text-center text-sm"}
       [:div
        swap-text
-       [:a {:class "underline-offset-4 hover:underline"
+       [:a {:class "underline-offset-4 hover:underline text-indigo-700 font-semibold"
             :href  (:link swap-link)}
         (:text swap-link)]]
-      [:a {:class "text-sm underline-offset-4 hover:underline"
+      [:a {:class "text-sm underline-offset-4 hover:underline text-indigo-700 font-semibold"
            :href  (href :sleep.pages.auth.views/forgot-password-route)}
        "Forgot your password?"]]]))
 
@@ -73,7 +56,6 @@
         on-change  (fn [k] #(swap! form-state assoc k (-> % .-target .-value)))]
     (fn []
       (let [login-errors @(rf/subscribe [::auth.subs/validation-errors :login])]
-        (js/console.log {:login-errors login-errors})
         [auth-form-container {:type      :login
                               :on-submit (fn [e]
                                            (.preventDefault e)
@@ -103,7 +85,6 @@
         on-change  (fn [k] #(swap! form-state assoc k (-> % .-target .-value)))]
     (fn []
       (let [validation-errors @(rf/subscribe [::auth.subs/validation-errors :register])]
-        (js/console.log validation-errors)
         [auth-form-container {:type      :register
                               :on-submit (fn [e]
                                            (.preventDefault e)
@@ -137,17 +118,20 @@
 (defn forgot-password-form []
   (let [email (r/atom "")]
     (fn []
-      [:form {:class     "flex flex-col gap-6"
-              :on-submit (fn [e]
-                           (.preventDefault e)
-                           (rf/dispatch [::auth.events/reset-password @email]))}
-       [:div {:class "flex flex-col items-center gap-2 text-center"}
-        [:h1 {:class "text-2xl font-bold"} "Forgot password"]]
-       [form-input {:id          :email
-                    :type        "email"
-                    :label       "Email Address"
-                    :placeholder "your-name@email.com"
-                    :value       @email
-                    :on-change   #(swap! email (-> % .-target .-value))
-                    :required?   true}]
-       [button {:type "submit"} "Reset Password"]])))
+      (let [loading @(rf/subscribe [::auth.subs/loading])]
+        [:form {:class     "flex flex-col gap-6"
+                :on-submit (fn [e]
+                             (.preventDefault e)
+                             (rf/dispatch [::auth.events/reset-password {:email @email}]))}
+         [:div {:class "flex flex-col items-center gap-2 text-center"}
+          [:h1 {:class "text-2xl font-bold"} "Forgot password"]]
+         [form-input {:id          :email
+                      :type        "email"
+                      :label       "Email Address"
+                      :placeholder "your-name@email.com"
+                      :value       @email
+                      :on-change   #(reset! email (-> % .-target .-value))
+                      :required?   true}]
+         [button {:type      "submit"
+                  :disabled loading}
+          "Reset Password"]]))))

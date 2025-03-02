@@ -4,8 +4,10 @@
 
 (rf/reg-fx
  :navigate!
- (fn [k params query]
-   (rfe/push-state k params query)))
+ (fn [k {:keys [params query replace?]}]
+   (if replace?
+     (rfe/replace-state k params query)
+     (rfe/push-state k params query))))
 
 (rf/reg-fx
  :set-local-storage
@@ -17,8 +19,3 @@
  (fn [cofx k]
    (let [v (.getItem (.-localStorage js/window) k)]
      (assoc cofx k v))))
-
-(rf/reg-fx
- :push-state
- (fn [route]
-   (apply rfe/push-state route)))

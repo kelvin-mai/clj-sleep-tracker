@@ -3,8 +3,8 @@
             [reitit.core :as r-core]
             [reitit.frontend :as r]
             [reitit.frontend.easy :as rfe]
-            [reitit.coercion.malli :as rcm]
-            [sleep.utils :refer [href]]
+            [sleep.utils.frontend :refer [href]]
+            [sleep.router.coercion :refer [coercion]]
             [sleep.pages.auth.views :as auth]
             [sleep.pages.dashboard.views :as dashboard]))
 
@@ -37,7 +37,7 @@
          :controllers []}]
     auth/routes
     dashboard/route]
-   {:data {:coercion rcm/coercion}}))
+   {:data {:coercion coercion}}))
 
 (defn init-routes! []
   (js/console.log "initializing routes")

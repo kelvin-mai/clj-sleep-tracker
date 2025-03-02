@@ -18,19 +18,19 @@
 
 (def routes
   ["auth/"
-   ["login" {:name ::login-route
+   ["login" {:name ::login
              :view #'login-page
              :link-text "Login"
              :controllers []}]
-   ["register" {:name ::register-route
+   ["register" {:name ::register
                 :view #'register-page
                 :link-text "Register"
                 :controllers []}]
-   ["logout" {:name ::logout-route
+   ["logout" {:name ::logout
               :view nil
               :link-text "Logout"
               :controllers []}]
-   ["forgot-password" {:name ::forgot-password-route
+   ["forgot-password" {:name ::forgot-password
                        :view forgot-password
                        :link-text "Forgot Password"
                        :controllers []}]])

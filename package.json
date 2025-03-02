@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "watch:cljs": "shadow-cljs watch app",
-    "watch:css": "tailwindcss -i ./resources/config/index.css -o ./resources/public/css/index.css --watch",
+    "watch:css": "tailwindcss -i ./src/css/index.css -o ./resources/public/css/index.css --watch",
     "watch:ui": "tsc --watch",
     "build": "shadow-cljs release app",
     "dev": "npm-run-all -p watch:cljs watch:css watch:ui",
